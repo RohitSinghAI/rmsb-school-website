@@ -20,6 +20,7 @@ export default function AdminSidebar() {
   const [open, setOpen] = useState(false);
 
   const [menus, setMenus] = useState({
+    homeNavbar: false,
     home: false,
     homeSlider: false,
     homeAbout: false,
@@ -102,6 +103,15 @@ export default function AdminSidebar() {
               open={menus.home}
               toggle={() => toggleMenu("home")}
             >
+              {/* navbar */}
+              <Folder
+                title="Navar"
+                open={menus.homeNavbar}
+                toggle={() => toggleMenu("homeNavbar")}
+                nested
+              >
+                <NavItem href="/admin/dashboard/navbar" label="Navbar" close={closeMobile} />
+              </Folder>
               {/* home */}
               <Folder
                 title="Home"
@@ -141,7 +151,17 @@ export default function AdminSidebar() {
                 nested
               >
                 <NavItem href="/admin/dashboard/teachers/faculty" label="Faculty" close={closeMobile} />
-                <NavItem href="/admin/home/teachers/manage" label="Manage Teachers" close={closeMobile} />
+                {/* <NavItem href="/admin/home/teachers/manage" label="Manage Teachers" close={closeMobile} /> */}
+              </Folder>
+              {/* teacher */}
+              <Folder
+                title="Teachers"
+                open={menus.homeTeachers}
+                toggle={() => toggleMenu("homeTeachers")}
+                nested
+              >
+                <NavItem href="/admin/dashboard/teachers/faculty" label="Faculty" close={closeMobile} />
+                {/* <NavItem href="/admin/home/teachers/manage" label="Manage Teachers" close={closeMobile} /> */}
               </Folder>
 
               {/* gallery */}
@@ -172,38 +192,10 @@ export default function AdminSidebar() {
                 toggle={() => toggleMenu("homeContact")}
                 nested
               >
-                 <NavItem href="/admin/dashboard/contact/contactInfo" label="Contact Info" close={closeMobile} />
+                <NavItem href="/admin/dashboard/contact/contactInfo" label="Contact Info" close={closeMobile} />
                 <NavItem href="/admin/home/contact/messages" label="Messages" close={closeMobile} />
               </Folder>
             </Folder>
-
-            {/* ABOUT */}
-            {/* <Folder
-              title="About"
-              icon={<FiFileText />}
-              open={menus.about}
-              toggle={() => toggleMenu("about")}
-            >
-              <Folder
-                title="School Info"
-                open={menus.aboutSchool}
-                toggle={() => toggleMenu("aboutSchool")}
-                nested
-              >
-                <NavItem href="/admin/about/vision" label="Vision & Mission" close={closeMobile} />
-                <NavItem href="/admin/about/history" label="History" close={closeMobile} />
-              </Folder>
-
-              <Folder
-                title="Management"
-                open={menus.aboutManagement}
-                toggle={() => toggleMenu("aboutManagement")}
-                nested
-              >
-                <NavItem href="/admin/about/principal" label="Principal" close={closeMobile} />
-                <NavItem href="/admin/about/staff" label="Staff" close={closeMobile} />
-              </Folder>
-            </Folder> */}
 
             {/* ACADEMICS */}
             <Folder
@@ -235,7 +227,7 @@ export default function AdminSidebar() {
               toggle={() => toggleMenu("settings")}
             >
               <NavItem
-                href="/admin/profile"
+                href="/admin/dashboard/profile"
                 icon={<FiUser />}
                 label="Profile"
                 close={closeMobile}

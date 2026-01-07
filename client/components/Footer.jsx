@@ -1,203 +1,113 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
 import { HiLocationMarker, HiPhone, HiMail } from "react-icons/hi";
 
-export default function Footer() {
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
+import { useGetNavbarQuery } from "@/redux/features/navbar/page";
+import { useGetAllContactInfoQuery } from "@/redux/features/contact/contactInfoApi";
 
-  function handleSubscribe(e) {
-    e.preventDefault();
-    if (!email) return;
-    setSubscribed(true);
-    setTimeout(() => {
-      setEmail("");
-    }, 800);
-  }
+export default function Footer() {
+  const { data: navbarData } = useGetNavbarQuery();
+  const brand = navbarData?.navbar?.brand;
+
+  const { data: contactData } = useGetAllContactInfoQuery();
+  const contact = contactData?.data?.[0];
 
   return (
-    <footer
-      className="bg-gradient-to-b from-slate-900 to-black text-white
-                 pt-14 md:pt-16 pb-8 md:pb-10 overflow-x-hidden"
-    >
-      <div
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8
-                   grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10"
-      >
-        {/* Brand */}
-        <div>
-          <h4 className="font-extrabold text-xl md:text-2xl tracking-wide">
-            RMSB MISSION SCHOOL
-          </h4>
+    <footer className="relative bg-gradient-to-br from-[#0b0f1a] via-[#0d1222] to-[#070a14] text-white pt-32 pb-14 overflow-hidden">
 
-          <p className="text-slate-400 mt-3 text-sm md:text-base leading-relaxed">
-            Empowering students with world-class education and a nurturing
-            learning environment.
-          </p>
+      {/* Glow */}
+      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-indigo-600/20 blur-[160px]" />
+      <div className="absolute top-40 -right-40 w-[400px] h-[400px] bg-purple-600/20 blur-[160px]" />
 
-          {/* Social Icons */}
-          <div className="flex gap-3 mt-4 flex-wrap">
-            {[FaFacebookF, FaInstagram, FaTwitter, FaYoutube].map(
-              (Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  aria-label="social"
-                  className="w-9 h-9 lg:w-10 lg:h-10
-                             flex items-center justify-center
-                             rounded-full bg-white/10
-                             hover:bg-indigo-600 transition"
-                >
-                  <Icon />
-                </a>
-              )
-            )}
-          </div>
-        </div>
+      <div className="relative max-w-7xl mx-auto px-6">
 
-        {/* Quick Links */}
-        <div>
-          <h5 className="font-semibold text-base md:text-lg mb-3">
-            Quick Links
-          </h5>
+        {/* GLASS CARD */}
+        <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-16">
 
-          <ul className="space-y-2 text-sm md:text-base text-slate-300">
-            <li>
-              <Link href="/about" className="hover:text-indigo-400">
-                About Us
-              </Link>
-            </li>
-            <li>
-              <Link href="/teachers" className="hover:text-indigo-400">
-                Our Faculty
-              </Link>
-            </li>
-            <li>
-              <Link href="/events" className="hover:text-indigo-400">
-                Events
-              </Link>
-            </li>
-            <li>
-              <Link href="/gallery" className="hover:text-indigo-400">
-                Gallery
-              </Link>
-            </li>
-          </ul>
-        </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
 
-        {/* Academics */}
-        <div>
-          <h5 className="font-semibold text-base md:text-lg mb-3">
-            Academics
-          </h5>
+            {/* Brand */}
+            <div className="lg:col-span-5">
+              <p className="uppercase tracking-[0.4em] text-xs text-indigo-300">
+                {brand?.subtitle}
+              </p>
 
-          <ul className="space-y-2 text-sm md:text-base text-slate-300">
-            <li>
-              <Link href="/admission" className="hover:text-indigo-400">
-                Admissions
-              </Link>
-            </li>
-            <li>
-              <Link href="/courses" className="hover:text-indigo-400">
-                Courses
-              </Link>
-            </li>
-            <li>
-              <Link href="/scholarships" className="hover:text-indigo-400">
-                Scholarships
-              </Link>
-            </li>
-            <li>
-              <Link href="/faq" className="hover:text-indigo-400">
-                FAQs
-              </Link>
-            </li>
-          </ul>
-        </div>
+              <h2 className="mt-6 text-4xl md:text-5xl font-semibold leading-tight">
+                {brand?.title}
+              </h2>
 
-        {/* Contact + Newsletter */}
-        <div>
-          <h5 className="font-semibold text-base md:text-lg mb-3">
-            Contact Us
-          </h5>
+              <p className="mt-6 text-slate-300 max-w-md leading-relaxed">
+                Where innovation meets education, shaping future-ready
+                leaders with global perspective.
+              </p>
 
-          <ul className="space-y-3 text-sm md:text-base text-slate-300">
-            <li className="flex items-start gap-2">
-              <HiLocationMarker className="text-lg mt-0.5 shrink-0" />
-              <span className="break-words">
-                123 School Road, City
-              </span>
-            </li>
-
-            <li className="flex items-center gap-2">
-              <HiPhone className="text-lg shrink-0" />
-              <span className="break-words">
-                +91 98765 43210
-              </span>
-            </li>
-
-            <li className="flex items-center gap-2">
-              <HiMail className="text-lg shrink-0" />
-              <span className="break-words">
-                support@rmsbmissionschool.edu
-              </span>
-            </li>
-          </ul>
-
-          {/* Newsletter */}
-          <div className="mt-5">
-            <h6 className="font-semibold text-sm md:text-base mb-2">
-              Newsletter
-            </h6>
-
-            {subscribed ? (
-              <div
-                className="rounded-md bg-green-600/20
-                           border border-green-600/30
-                           p-3 text-sm text-green-200"
-              >
-                Thanks — you're subscribed!
+              <div className="flex gap-6 mt-10">
+                {[FaFacebookF, FaInstagram, FaTwitter, FaYoutube].map(
+                  (Icon, i) => (
+                    <a
+                      key={i}
+                      href="#"
+                      className="w-10 h-10 rounded-full
+                                 bg-white/10 border border-white/20
+                                 flex items-center justify-center
+                                 hover:bg-indigo-600 transition"
+                    >
+                      <Icon size={16} />
+                    </a>
+                  )
+                )}
               </div>
-            ) : (
-              <form
-                onSubmit={handleSubscribe}
-                className="mt-2 flex flex-col md:flex-col lg:flex-row gap-2"
-              >
-                <input
-                  type="email"
-                  placeholder="Email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="px-4 py-2 rounded-md bg-white/10
-                             border border-white/20
-                             w-full placeholder:text-slate-300
-                             text-sm outline-none"
-                />
+            </div>
 
-                <button
-                  type="submit"
-                  className="bg-indigo-600 hover:bg-indigo-700
-                             px-4 py-2 rounded-md
-                             text-sm whitespace-nowrap"
-                >
-                  Join
-                </button>
-              </form>
-            )}
+            {/* Links */}
+            <div className="lg:col-span-3">
+              <h5 className="text-xs uppercase tracking-widest text-indigo-300 mb-6">
+                Explore
+              </h5>
+
+              <ul className="space-y-4 text-sm text-slate-200">
+                <li><Link href="/about">About Us</Link></li>
+                <li><Link href="/teachers">Faculty</Link></li>
+                <li><Link href="/gallery">Gallery</Link></li>
+                <li><Link href="/admission">Admissions</Link></li>
+                <li><Link href="/contact">Contact</Link></li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div className="lg:col-span-4">
+              <h5 className="text-xs uppercase tracking-widest text-indigo-300 mb-6">
+                Contact
+              </h5>
+
+              <ul className="space-y-6 text-sm text-slate-200">
+                <li className="flex gap-4">
+                  <HiLocationMarker className="text-indigo-400 text-xl shrink-0" />
+                  <span>{contact?.address}</span>
+                </li>
+
+                <li className="flex gap-4 items-center">
+                  <HiPhone className="text-indigo-400 text-xl shrink-0" />
+                  <span>{contact?.phone}</span>
+                </li>
+
+                <li className="flex gap-4 items-center">
+                  <HiMail className="text-indigo-400 text-xl shrink-0" />
+                  <span>{contact?.email}</span>
+                </li>
+              </ul>
+            </div>
+
           </div>
         </div>
-      </div>
 
-      {/* Bottom Bar */}
-      <div
-        className="border-t border-white/10 mt-10 pt-6
-                   text-center text-xs sm:text-sm text-slate-500"
-      >
-        © {new Date().getFullYear()} RMSB MISSION SCHOOL — Crafted with ❤️ for
-        future leaders.
+        {/* Bottom */}
+        <div className="mt-16 text-center text-xs text-slate-400">
+          © {new Date().getFullYear()} {brand?.title}. All rights reserved.
+        </div>
+
       </div>
     </footer>
   );

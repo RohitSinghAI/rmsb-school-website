@@ -60,7 +60,7 @@ export default function HomeSlider() {
     return (
       <section className="h-screen flex items-center justify-center bg-[#0b0b0b]">
         <span className="text-[10px] tracking-[0.6em] text-white/40 animate-pulse">
-          CURATING ART
+        RMSB!
         </span>
       </section>
     );

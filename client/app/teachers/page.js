@@ -48,7 +48,7 @@ export default function TeachersPage() {
   const { data: facultyData } = useGetAllFacultyQuery()
   const teachers = facultyData?.data || [];
   return (
-    <main className="bg-[#fafafa] text-[#1c1c1c] min-h-screen">
+    <main className="text-[#1c1c1c] min-h-screen">
 
       {/* FACULTY HERO */}
       <section className="relative h-[70vh] md:h-[80vh] flex items-end md:items-center">
@@ -153,7 +153,7 @@ export default function TeachersPage() {
       )}
 
       {/* ================= TEACHING APPROACH ================= */}
-      <section className="px-6 md:px-20 py-28 bg-[#fafafa]">
+      <section className="px-6 md:px-20 py-28">
         <div className="max-w-6xl mx-auto">
 
           <div className="max-w-3xl mb-16">

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAdmin } from "../redux/features/adminAuth/adminAuthSlice";
 import { useLogoutAdminMutation } from "../redux/features/adminAuth/adminAuthApi";
-
+  
 export default function AdminHeader() {
   const router = useRouter();
   const dispatch = useDispatch();

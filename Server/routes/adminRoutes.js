@@ -23,6 +23,9 @@ router.get("/dashboard", checkAuth, AdminController.dashboard);
 router.post("/forgot-password", AdminController.forgotPassword);
 router.post("/reset-password", AdminController.resetPassword);
 
+// ================= Navbar ROUTES =================
+const navbarRoutes = require("./navbar/navbarRoutes");
+
 // ================= HOME ROUTES =================
 const sliderRoute = require("./home/sliderRoute");
 const schoolHighlightRoutes = require("./home/schoolHighlightRoutes");
@@ -36,7 +39,7 @@ const principalRoutes = require("./about/principalRoutes");
 const missionVisionValuesRoutes = require("./about/missionVisionValuesRoutes");
 const journeyTimelineRoutes = require("./about/journeyTimelineRoutes");
 const programsCurriculumRoutes = require("./about/programsCurriculumRoutes");
-const  facilityRoutes= require("./about/facilityRoutes");
+const facilityRoutes = require("./about/facilityRoutes");
 
 
 // ================= TEACHER / FACULTY ROUTES =================
@@ -50,6 +53,9 @@ const contactInfoRoutes = require("./contact/contactInfoRoutes");
 const contactRoutes = require("./contact/contactRoutes");
 
 // ================= USE ROUTES =================
+
+// Navbar
+router.use("/", navbarRoutes);
 
 // Home
 router.use("/", sliderRoute);

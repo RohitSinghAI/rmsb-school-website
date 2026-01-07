@@ -49,7 +49,7 @@ export default function AdmissionPage() {
   };
 
   return (
-    <main className="bg-[#f9fafb] min-h-screen text-[#1c1c1c]">
+    <main className="min-h-screen text-[#1c1c1c]">
 
       {/* HERO */}
       <section className="relative h-[50vh] md:h-[70vh] flex items-end md:items-center">

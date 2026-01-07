@@ -6,7 +6,7 @@ export const aboutUsApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: process.env.NEXT_PUBLIC_API_URL + "/api/admin",
         credentials: "include",
-    }),
+    }), 
 
     tagTypes: ["AboutUs"],
 

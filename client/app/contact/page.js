@@ -9,7 +9,7 @@ export default function ContactPage() {
   const { data } = useGetAllContactInfoQuery();
   const [createContact, { isLoading }] = useCreateContactMutation();
 
-  const info = data?.data?.[0]; 
+  const info = data?.data?.[0];
 
   const [showStreetView, setShowStreetView] = useState(false);
 
@@ -34,7 +34,7 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="bg-[#f9fafb] text-[#1c1c1c] min-h-screen">
+    <main className="text-[#1c1c1c] min-h-screen">
 
       {/* ================= HERO ================= */}
       <section className="relative h-[70vh] md:h-[85vh] flex items-end md:items-center">

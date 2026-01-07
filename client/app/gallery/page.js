@@ -22,7 +22,7 @@ export default function GalleryPage() {
       : galleryImages.filter((img) => img.category === active);
 
   return (
-    <main className="bg-[#f9fafb] text-[#1c1c1c] min-h-screen">
+    <main className="text-[#1c1c1c] min-h-screen">
 
       {/* ================= HERO ================= */}
       <section className="relative h-[70vh] md:h-[80vh] flex items-end md:items-center">

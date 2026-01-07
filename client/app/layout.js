@@ -18,20 +18,23 @@ const playfair = Playfair_Display({
 });
 
 export const metadata = {
-  title: "School Management",
-  description: "Admin frontend built with Next.js and Tailwind",
+  title: "Best School in Bhander | RMSB - School",
+  description: "Savitribai Phule Mission School Bhander",
+  icons: {
+    // icon: "/favicon.ico",      // 👈 TAB ICON
+    // shortcut: "/favicon.ico",
+    // apple: "/faviconnn.ico",
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${poppins.variable} ${playfair.variable}`}>
-        <div className="min-h-screen flex flex-col">
-          <Providers>
-            <LayoutWrapper>{children}</LayoutWrapper>
-            <ClientToaster />
-          </Providers>
-        </div>
+        <Providers>
+          <LayoutWrapper>{children}</LayoutWrapper>
+          <ClientToaster />
+        </Providers>
       </body>
     </html>
   );

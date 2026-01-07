@@ -16,6 +16,7 @@ import { contactInfoApi } from "./features/contact/contactInfoApi";
 import { facilityApi } from "./features/about/facilityApi";
 import { contactApi } from "./features/contact/contactApi";
 import { galleryApi } from "./features/gallery/galleryImagesApi";
+import { navbarApi } from "./features/navbar/page";
 
 
 
@@ -23,6 +24,8 @@ export const store = configureStore({
   reducer: {
     adminAuth: adminAuthReducer,
     [adminAuthApi.reducerPath]: adminAuthApi.reducer,
+    //navbar page
+    [navbarApi.reducerPath]: navbarApi.reducer,
     //home page
     [sliderApi.reducerPath]: sliderApi.reducer,
     [schoolHighlightApi.reducerPath]: schoolHighlightApi.reducer,
@@ -56,6 +59,8 @@ export const store = configureStore({
       serializableCheck: false,
     })
       .concat(adminAuthApi.middleware)
+      //navbar
+      .concat(navbarApi.middleware)
       //home
       .concat(sliderApi.middleware)
       .concat(schoolHighlightApi.middleware)
