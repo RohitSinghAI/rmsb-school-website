@@ -87,10 +87,20 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {faculty.map((f, i) => (
-            <motion.div key={f.name} whileHover={{ y: -6 }} className="bg-white rounded-2xl p-4 text-center shadow">
+          {faculty.map((f) => (
+            <motion.div
+              key={f._id}
+              whileHover={{ y: -6 }}
+              className="bg-white rounded-2xl p-4 text-center shadow"
+            >
               <div className="w-28 h-28 mx-auto rounded-full overflow-hidden shadow-md">
-                <Image src={f.image?.url} alt={f.name} width={140} height={140} className="object-cover" />
+                <Image
+                  src={f.image?.url}
+                  alt={f.name}
+                  width={140}
+                  height={140}
+                  className="object-cover"
+                />
               </div>
               <div className="mt-4 font-semibold">{f.name}</div>
               <div className="text-sm text-indigo-600">{f.subject}</div>
@@ -98,6 +108,7 @@ export default function HomePage() {
             </motion.div>
           ))}
         </div>
+
       </section>
 
       {/* EVENTS TIMELINE */}

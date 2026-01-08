@@ -34,7 +34,7 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="text-[#1c1c1c] min-h-screen">
+    <main className="text-[#1c1c1c] min-h-screen overflow-x-hidden">
 
       {/* ================= HERO ================= */}
       <section className="relative h-[70vh] md:h-[85vh] flex items-end md:items-center">
@@ -49,7 +49,7 @@ export default function ContactPage() {
           <p className="uppercase tracking-[0.35em] text-white/70 text-sm">
             Contact Us
           </p>
-          <h1 className="mt-6 text-4xl md:text-6xl font-light text-white">
+          <h1 className="mt-6 text-4xl md:text-6xl font-light text-white break-words">
             School Administration Office
           </h1>
           <p className="mt-6 text-white/80 text-lg md:text-xl">
@@ -124,12 +124,15 @@ export default function ContactPage() {
                 value={form.message}
                 onChange={(e) => update("message", e.target.value)}
                 required
+                inputMode="text"
                 className="w-full mt-3 border-b border-gray-300 focus:border-black outline-none py-3 bg-transparent"
               />
             </div>
 
             <button
+              type="submit"
               disabled={isLoading}
+              aria-busy={isLoading}
               className="mt-12 w-full py-4 bg-[#1c1c1c] text-white rounded-full tracking-widest hover:bg-black transition"
             >
               {isLoading ? "Submitting..." : "Submit Enquiry"}
@@ -142,7 +145,6 @@ export default function ContactPage() {
       <section className="mt-32 px-6 md:px-16">
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden max-w-7xl mx-auto">
 
-          {/* HEADER */}
           <div className="flex justify-between items-center px-6 py-4 border-b">
             <h3 className="text-lg font-light">Campus Location</h3>
 
@@ -156,19 +158,20 @@ export default function ContactPage() {
             )}
           </div>
 
-          {/* MAP / STREET VIEW */}
           {info?.mapUrl ? (
             showStreetView && info?.streetViewUrl ? (
               <iframe
                 src={info.streetViewUrl}
                 className="w-full h-[420px] md:h-[520px]"
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               />
             ) : (
               <iframe
                 src={info.mapUrl}
                 className="w-full h-[420px] md:h-[520px]"
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               />
             )
           ) : (
@@ -177,7 +180,6 @@ export default function ContactPage() {
             </div>
           )}
 
-          {/* FOOTER LINKS */}
           <div className="flex justify-end gap-6 px-6 py-4 bg-gray-50">
             {info?.mapLink && (
               <a
@@ -216,7 +218,7 @@ const LuxuryInfo = ({ label, value }) => (
     <p className="text-xs uppercase tracking-widest text-gray-500">
       {label}
     </p>
-    <p className="mt-2 text-lg font-light">
+    <p className="mt-2 text-lg font-light break-words">
       {value || "—"}
     </p>
   </div>
@@ -230,6 +232,7 @@ const LuxuryField = ({ label, ...props }) => (
     <input
       {...props}
       required
+      inputMode="text"
       className="w-full mt-3 border-b border-gray-300 focus:border-black outline-none py-3 bg-transparent"
     />
   </div>

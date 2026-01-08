@@ -1,7 +1,6 @@
 const contactModel = require("../../models/contact/contact");
 
 class ContactController {
-    // CREATE contact (Contact Us form)
     static create = async (req, res) => {
         try {
             const { name, phone, email, message } = req.body;
@@ -32,8 +31,6 @@ class ContactController {
             });
         }
     };
-
-    // GET all contacts (Admin)
     static getAll = async (req, res) => {
         try {
             const contacts = await contactModel.find().sort({ createdAt: -1 });
@@ -49,8 +46,6 @@ class ContactController {
             });
         }
     };
-
-    // DELETE contact (Admin)
     static delete = async (req, res) => {
         try {
             const contact = await contactModel.findById(req.params.id);

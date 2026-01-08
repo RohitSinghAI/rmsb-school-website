@@ -83,7 +83,7 @@ export default function TeachersPage() {
 
           {teachers.map((t) => (
             <div
-              key={t.id}
+              key={t._id}
               onClick={() => setActive(t)}
               className="group bg-slate-50 rounded-3xl p-6 shadow hover:shadow-2xl transition cursor-pointer flex gap-6"
             >
@@ -112,6 +112,7 @@ export default function TeachersPage() {
               </div>
             </div>
           ))}
+
 
         </div>
       </section>

@@ -1,19 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { useGetNavbarQuery } from "@/redux/features/navbar/page";
 
 export default function AdminFooter() {
-  return (
-    <footer className=" bgfixed bottom-0 right-0 left-0 md:left-72 z-40 bg-white border-t border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
+  const { data: navbarData } = useGetNavbarQuery();
+  const brand = navbarData?.navbar?.brand;
 
+  return (
+    <footer className="fixed bottom-0 inset-x-0 md:left-72 z-40 bg-white border-t border-gray-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm text-gray-500">
-          
+
           {/* LEFT */}
           <p className="text-center sm:text-left">
             © {new Date().getFullYear()}{" "}
             <span className="font-semibold text-gray-700">
-              School Management System
+              {brand?.title || "School Management System"}
             </span>
           </p>
 
@@ -29,8 +32,8 @@ export default function AdminFooter() {
               Support
             </Link>
           </div>
-        </div>
 
+        </div>
       </div>
     </footer>
   );

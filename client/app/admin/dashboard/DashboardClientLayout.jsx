@@ -16,7 +16,7 @@ export default function DashboardClientLayout({ children }) {
 
         <AdminHeader />
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto pb-10">
           {children}
         </main>
 

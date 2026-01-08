@@ -9,7 +9,7 @@ import {
 } from "@/redux/features/adminAuth/adminAuthApi";
 import { clearAdmin } from "@/redux/features/adminAuth/adminAuthSlice";
 
-export default function AdminDashboardVIP() {
+export default function AdminDashboard() {
   const router = useRouter();
   const dispatch = useDispatch();
 

@@ -38,11 +38,7 @@ export default function AdminProfilePage() {
   /* ================= UPDATE PROFILE ================= */
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
-
-    if (!name.trim()) {
-      toast.error("Name cannot be empty");
-      return;
-    }
+    if (!name.trim()) return toast.error("Name cannot be empty");
 
     try {
       await updateProfile({ name }).unwrap();
@@ -58,30 +54,20 @@ export default function AdminProfilePage() {
 
     const { currentPassword, newPassword, confirmPassword } = passwords;
 
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      toast.error("All password fields are required");
-      return;
-    }
+    if (!currentPassword || !newPassword || !confirmPassword)
+      return toast.error("All password fields are required");
 
-    if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
+    if (newPassword !== confirmPassword)
+      return toast.error("Passwords do not match");
 
     try {
       await changePassword({
-        oldPassword: currentPassword, // ✅ BACKEND MATCH
+        oldPassword: currentPassword,
         newPassword,
       }).unwrap();
 
       toast.success("Password changed successfully");
-
-      setPasswords({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-
+      setPasswords({ currentPassword: "", newPassword: "", confirmPassword: "" });
       setShowPasswordForm(false);
       setShowPassword(false);
     } catch (error) {
@@ -98,11 +84,11 @@ export default function AdminProfilePage() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-6xl mx-auto">
+    <div className="px-4 sm:px-6 md:px-8 py-6 max-w-6xl mx-auto">
 
       {/* HEADER */}
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800">
+        <h1 className="text-xl sm:text-2xl font-semibold text-gray-800">
           Admin Profile
         </h1>
         <p className="text-sm text-gray-500">
@@ -113,7 +99,7 @@ export default function AdminProfilePage() {
       {/* GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* LEFT PROFILE CARD */}
+        {/* PROFILE CARD */}
         <div className="bg-white border rounded-lg p-6">
           <div className="flex flex-col items-center text-center">
             <div className="w-20 h-20 rounded-full bg-slate-900 text-white
@@ -125,7 +111,9 @@ export default function AdminProfilePage() {
               {admin?.name}
             </h2>
 
-            <p className="text-sm text-gray-500">{admin?.email}</p>
+            <p className="text-sm text-gray-500 break-all">
+              {admin?.email}
+            </p>
 
             <span className="mt-2 inline-block px-3 py-1 text-xs rounded-full
               bg-slate-100 text-slate-700">
@@ -177,8 +165,8 @@ export default function AdminProfilePage() {
               <button
                 type="submit"
                 disabled={updating || name === admin?.name}
-                className="px-5 py-2 bg-slate-900 text-white rounded-md
-                hover:bg-slate-800 transition text-sm disabled:opacity-60"
+                className="w-full sm:w-auto px-6 py-2 bg-slate-900 text-white
+                rounded-md hover:bg-slate-800 transition text-sm disabled:opacity-60"
               >
                 {updating ? "Saving..." : "Save Changes"}
               </button>
@@ -187,15 +175,15 @@ export default function AdminProfilePage() {
 
           {/* CHANGE PASSWORD */}
           <div className="bg-white border rounded-lg p-6">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 gap-3">
               <h3 className="text-lg font-semibold">Change Password</h3>
 
               {!showPasswordForm && (
                 <button
                   type="button"
                   onClick={() => setShowPasswordForm(true)}
-                  className="px-4 py-2 text-sm border border-red-600 text-red-600
-                  rounded-md hover:bg-red-600 hover:text-white transition"
+                  className="w-full sm:w-auto px-4 py-2 text-sm border border-red-600
+                  text-red-600 rounded-md hover:bg-red-600 hover:text-white transition"
                 >
                   Change Password
                 </button>
@@ -205,7 +193,7 @@ export default function AdminProfilePage() {
             {showPasswordForm && (
               <form
                 onSubmit={handlePasswordChange}
-                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4"
               >
                 <Input
                   label="Current Password"
@@ -240,12 +228,12 @@ export default function AdminProfilePage() {
                   onToggle={() => setShowPassword(!showPassword)}
                 />
 
-                <div className="md:col-span-2 flex gap-3">
+                <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3">
                   <button
                     type="submit"
                     disabled={changing}
-                    className="px-5 py-2 bg-red-600 text-white rounded-md
-                    hover:bg-red-700 transition text-sm disabled:opacity-60"
+                    className="w-full sm:w-auto px-6 py-2 bg-red-600 text-white
+                    rounded-md hover:bg-red-700 transition text-sm disabled:opacity-60"
                   >
                     {changing ? "Updating..." : "Update Password"}
                   </button>
@@ -261,8 +249,8 @@ export default function AdminProfilePage() {
                         confirmPassword: "",
                       });
                     }}
-                    className="px-5 py-2 border border-gray-300 rounded-md
-                    text-gray-700 hover:bg-gray-100 transition text-sm"
+                    className="w-full sm:w-auto px-6 py-2 border border-gray-300
+                    rounded-md text-gray-700 hover:bg-gray-100 transition text-sm"
                   >
                     Cancel
                   </button>
@@ -277,7 +265,7 @@ export default function AdminProfilePage() {
   );
 }
 
-/* ================= INPUT COMPONENT ================= */
+/* ================= INPUT ================= */
 function Input({
   label,
   type = "text",
