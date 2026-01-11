@@ -47,7 +47,8 @@ const facultyRoutes = require("./teacher/facultyRoutes");
 
 // ================= GALLERY / GALLERY ROUTES =================
 const galleryRoutes = require("./galleryImages/galleryRoutes");
-
+// ================= ADMISSION ROUTES =================
+const admissionRoutes = require("./admission/admissionRoutes");
 // ================= CONTACT ROUTES =================
 const contactInfoRoutes = require("./contact/contactInfoRoutes");
 const contactRoutes = require("./contact/contactRoutes");
@@ -74,10 +75,10 @@ router.use("/", facilityRoutes)
 
 // Teacher
 router.use("/", facultyRoutes);
-
 // Gallery
 router.use("/", galleryRoutes);
-
+// Admission
+router.use("/", admissionRoutes);
 // Contact
 router.use("/", contactInfoRoutes);
 router.use("/", contactRoutes);

@@ -64,7 +64,7 @@ export default function AboutPage() {
   return (
     <main className="min-h-screen">
       {/* Hero */}
-      <section className="relative min-h-[100vh] sm:min-h-[90vh] md:min-h-[85vh] overflow-hidden">
+      <section className="relative min-h-[100vh] sm:min-h-[90vh] md:min-h-[100vh] overflow-hidden">
 
         {/* ================= BACKGROUND IMAGE ================= */}
         <img
@@ -120,7 +120,7 @@ export default function AboutPage() {
 
       </section>
       {/* ================= PRINCIPAL WELCOME ================= */}
-      <section className="bg-white py-20 md:py-28">
+      <section className="py-20 md:py-28">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
 
           {principal.map((p) => (
@@ -197,7 +197,7 @@ export default function AboutPage() {
         </div>
       </section>
       {/* ================= SCHOOL ABOUT ================= */}
-      <section className="bg-white py-20 md:py-28">
+      <section className="py-20 md:py-28">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
           {aboutUs.map((item) => (
@@ -265,7 +265,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission / Vision / Values */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="max-w-6xl mx-auto px-6">
           <h3 className="text-2xl font-extrabold mb-6">
             Mission, Vision & Values
@@ -381,7 +381,7 @@ export default function AboutPage() {
       </section>
 
       {/* ================= FACULTY & LEADERSHIP ================= */}
-      <section className="py-16 md:py-24 to-slate-50">
+      <section className="py-16 md:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
           {/* Heading */}
@@ -453,7 +453,7 @@ export default function AboutPage() {
       </section>
 
       {/* Facilities */}
-      <section className="py-20 bg-white">
+      <section className="py-20">
         <div className="max-w-6xl mx-auto px-6">
 
           <h3 className="text-2xl font-semibold text-slate-900 mb-4">
@@ -499,7 +499,7 @@ export default function AboutPage() {
       </section>
 
       {/* Alumni & Outcomes */}
-      <section className="py-20 bg-white">
+      <section className="py-20">
         <div className="max-w-6xl mx-auto px-6">
 
           <h3 className="text-2xl font-semibold text-slate-900 mb-4">
@@ -526,7 +526,7 @@ export default function AboutPage() {
       </section>
 
       {/* student say */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="max-w-6xl mx-auto px-6">
 
           <h3 className="text-2xl font-extrabold mb-6">
@@ -556,7 +556,7 @@ export default function AboutPage() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20">
         <div className="max-w-6xl mx-auto px-6 text-center">
 
           <h3 className="text-3xl font-bold text-slate-900 mb-4">

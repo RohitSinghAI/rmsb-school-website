@@ -17,6 +17,7 @@ import { facilityApi } from "./features/about/facilityApi";
 import { contactApi } from "./features/contact/contactApi";
 import { galleryApi } from "./features/gallery/galleryImagesApi";
 import { navbarApi } from "./features/navbar/page";
+import { admissionApi } from "./features/admission/admissionApi";
 
 
 
@@ -46,6 +47,9 @@ export const store = configureStore({
 
     //gallery
     [galleryApi.reducerPath]: galleryApi.reducer,
+
+    //admission
+    [admissionApi.reducerPath]: admissionApi.reducer,
 
     //Contact
     [contactInfoApi.reducerPath]: contactInfoApi.reducer,
@@ -78,6 +82,8 @@ export const store = configureStore({
       .concat(facultyApi.middleware)
       // gallery
       .concat(galleryApi.middleware)
+      // admission
+      .concat(admissionApi.middleware)
       // contact
       .concat(contactInfoApi.middleware)
       .concat(contactApi.middleware)

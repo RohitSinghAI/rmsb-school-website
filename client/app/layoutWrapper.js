@@ -11,7 +11,7 @@ export default function LayoutWrapper({ children }) {
     return (
         <>
             {!isAdminRoute && <Navbar />}
-            <main>{children}</main>
+            <main className="bg-[#fdfcf9]">{children}</main>
             {!isAdminRoute && <Footer />}
         </>
     );

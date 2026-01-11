@@ -51,7 +51,7 @@ export default function TeachersPage() {
     <main className="text-[#1c1c1c] min-h-screen">
 
       {/* FACULTY HERO */}
-      <section className="relative h-[70vh] md:h-[80vh] flex items-end md:items-center">
+      <section className="relative h-[70vh] md:h-[100vh] flex items-end md:items-center">
         <img
           src="/image.jpg"
           className="absolute inset-0 w-full h-full object-cover"
@@ -78,7 +78,7 @@ export default function TeachersPage() {
       </section>
 
       {/* ================= TEACHERS SECTION (OLD STYLE) ================= */}
-      <section className="px-6 md:px-20 py-28 bg-white">
+      <section className="px-6 md:px-20 py-28">
         <div className="max-w-6xl mx-auto grid gap-12 md:grid-cols-2">
 
           {teachers.map((t) => (

@@ -37,7 +37,7 @@ export default function ContactPage() {
     <main className="text-[#1c1c1c] min-h-screen overflow-x-hidden">
 
       {/* ================= HERO ================= */}
-      <section className="relative h-[70vh] md:h-[85vh] flex items-end md:items-center">
+      <section className="relative h-[70vh] md:h-[90vh] flex items-end md:items-center">
         <img
           src="/image.jpg"
           alt="School Campus"

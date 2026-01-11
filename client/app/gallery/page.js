@@ -25,7 +25,7 @@ export default function GalleryPage() {
     <main className="text-[#1c1c1c] min-h-screen">
 
       {/* ================= HERO ================= */}
-      <section className="relative h-[70vh] md:h-[80vh] flex items-end md:items-center">
+      <section className="relative h-[70vh] md:h-[100vh] flex items-end md:items-center">
         <img
           src="/image.jpg"
           alt="Gallery"

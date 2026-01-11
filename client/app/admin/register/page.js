@@ -20,28 +20,21 @@ export default function RegisterPage() {
 
   const [registerAdmin, { isLoading }] = useRegisterAdminMutation();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  // 🔐 Strong password rule
   const strongPassword =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const name = form.name.trim();
-    const email = form.email.trim();
-
-    if (!name || !email || !form.password || !form.confirmPassword) {
+    if (!form.name || !form.email || !form.password || !form.confirmPassword) {
       return toast.error("All fields are required");
     }
 
     if (!strongPassword.test(form.password)) {
-      return toast.error(
-        "Password must be 8+ chars, include upper, lower, number & symbol"
-      );
+      return toast.error("Password must be strong");
     }
 
     if (form.password !== form.confirmPassword) {
@@ -50,38 +43,45 @@ export default function RegisterPage() {
 
     try {
       await registerAdmin({
-        name,
-        email,
+        name: form.name.trim(),
+        email: form.email.trim(),
         password: form.password,
       }).unwrap();
 
-      toast.success("Registration successful!");
+      toast.success("Registration successful");
       setTimeout(() => router.push("/admin/login"), 1200);
     } catch (err) {
-      console.error("Register error:", err);
-      toast.error(
-        err?.data?.message || err?.error || "Registration failed"
-      );
+      toast.error(err?.data?.message || "Registration failed");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#fdfcf9] px-4 sm:px-6">
       <Toaster position="top-right" />
 
-      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-indigo-600 mb-6">
-          Admin Register
-        </h2>
+      <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+        {/* Header */}
+        <div className="px-6 sm:px-10 pt-8 sm:pt-10 pb-4 sm:pb-6 text-center">
+          <h2 className="text-2xl sm:text-3xl font-heading text-gray-900">
+            Administrator Access
+          </h2>
+          <p className="text-sm text-gray-500 mt-2">
+            Secure system registration
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="px-6 sm:px-10 pb-6 sm:pb-8 space-y-4 sm:space-y-5"
+        >
           <input
             type="text"
             name="name"
             placeholder="Full Name"
             value={form.name}
             onChange={handleChange}
-            className="w-full border px-4 py-2 rounded focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-3 text-sm sm:text-base rounded-md border border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none"
           />
 
           <input
@@ -90,7 +90,7 @@ export default function RegisterPage() {
             placeholder="Email Address"
             value={form.email}
             onChange={handleChange}
-            className="w-full border px-4 py-2 rounded focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-3 text-sm sm:text-base rounded-md border border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none"
           />
 
           <div className="relative">
@@ -100,12 +100,12 @@ export default function RegisterPage() {
               placeholder="Password"
               value={form.password}
               onChange={handleChange}
-              className="w-full border px-4 py-2 rounded focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 text-sm sm:text-base rounded-md border border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none"
             />
             <button
               type="button"
               onClick={() => setShowPass(!showPass)}
-              className="absolute right-3 top-2.5 text-sm text-indigo-600"
+              className="absolute right-4 top-3 text-xs sm:text-sm text-gray-600"
             >
               {showPass ? "Hide" : "Show"}
             </button>
@@ -118,12 +118,12 @@ export default function RegisterPage() {
               placeholder="Confirm Password"
               value={form.confirmPassword}
               onChange={handleChange}
-              className="w-full border px-4 py-2 rounded focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 text-sm sm:text-base rounded-md border border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPass(!showConfirmPass)}
-              className="absolute right-3 top-2.5 text-sm text-indigo-600"
+              className="absolute right-4 top-3 text-xs sm:text-sm text-gray-600"
             >
               {showConfirmPass ? "Hide" : "Show"}
             </button>
@@ -132,25 +132,28 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-2 rounded text-white font-semibold ${
+            className={`w-full py-3 rounded-md text-sm sm:text-base font-medium transition ${
               isLoading
-                ? "bg-indigo-400 cursor-not-allowed"
-                : "bg-indigo-600 hover:bg-indigo-700"
+                ? "bg-gray-400 cursor-not-allowed text-white"
+                : "bg-gray-900 hover:bg-black text-white"
             }`}
           >
-            {isLoading ? "Registering..." : "Register"}
+            {isLoading ? "Creating..." : "Create Account"}
           </button>
         </form>
 
-        <p className="text-center text-sm mt-4">
-          Already have an account?{" "}
-          <button
-            onClick={() => router.push("/admin/login")}
-            className="text-indigo-600 font-semibold hover:underline"
-          >
-            Login
-          </button>
-        </p>
+        {/* Footer */}
+        <div className="pb-5 text-center">
+          <p className="text-sm text-gray-500">
+            Already have an account?{" "}
+            <button
+              onClick={() => router.push("/admin/login")}
+              className="text-gray-900 font-medium hover:underline"
+            >
+              Login
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );

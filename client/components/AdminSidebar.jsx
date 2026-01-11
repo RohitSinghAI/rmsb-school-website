@@ -33,7 +33,7 @@ export default function AdminSidebar() {
     aboutSchool: false,
     aboutManagement: false,
 
-    academics: false,
+    admissions: false,
     finance: false,
     settings: false,
   });
@@ -133,7 +133,7 @@ export default function AdminSidebar() {
               </Folder>
 
               <Folder title="Admissions" open={menus.homeAdmissions} toggle={() => toggleMenu("homeAdmissions")} nested>
-                <NavItem href="/admin/home/admissions/applications" label="Applications" close={closeMobile} />
+                <NavItem href="#" label="Applications" close={closeMobile} />
               </Folder>
 
               <Folder title="Contact" open={menus.homeContact} toggle={() => toggleMenu("homeContact")} nested>
@@ -142,9 +142,10 @@ export default function AdminSidebar() {
               </Folder>
             </Folder>
 
-            <Folder title="Academics" icon={<FiBookOpen />} open={menus.academics} toggle={() => toggleMenu("academics")}>
-              <NavItem href="/admin/students" label="Students" close={closeMobile} />
-              <NavItem href="/admin/classes" label="Classes" close={closeMobile} />
+            <Folder title="Admission" icon={<FiBookOpen />} open={menus.admissions} toggle={() => toggleMenu("admissions")}>
+              <NavItem href="/admin/dashboard/admissions/applications" label="Applications" close={closeMobile} />
+              {/* <NavItem href="/admin/students" label="Students" close={closeMobile} />
+              <NavItem href="/admin/classes" label="Classes" close={closeMobile} /> */}
             </Folder>
 
             <Folder title="Finance" icon={<FiDollarSign />} open={menus.finance} toggle={() => toggleMenu("finance")}>
