@@ -4,12 +4,12 @@ import {
     useGetAllAdmissionsQuery,
     useDeleteAdmissionMutation,
     useUpdateAdmissionDocumentsMutation,
-    // useUpdateAdmissionMutation,
+    useUpdateAdmissionMutation,
     useUpdateAdmissionStatusMutation,
 } from "@/redux/features/admission/admissionApi";
 
 import { useGetNavbarQuery } from "@/redux/features/navbar/page";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 import { exportSingleAdmissionPDF } from "@/utils/exportSingleAdmissionPDF";
@@ -28,7 +28,7 @@ const validateFile = (file) => {
         return false;
     }
     return true;
-}; 
+};
 
 /* ================= DROPZONE ================= */
 const Dropzone = ({ label, onFile }) => (
@@ -47,14 +47,14 @@ const Dropzone = ({ label, onFile }) => (
 );
 
 export default function AdminAdmissionPage() {
-    const { data, isLoading } = useGetAllAdmissionsQuery();
+    const { data, isLoading: listLoading } = useGetAllAdmissionsQuery();
     const { data: navbarData } = useGetNavbarQuery();
     const navbar = navbarData?.navbar;
 
-    // const [updateAdmission] = useUpdateAdmissionMutation();
-    const [
-        updateAdmissionStatus,
-        { isLoading: statusLoading },] = useUpdateAdmissionStatusMutation();
+    const [updateAdmission, { isLoading: updateLoading }] =
+        useUpdateAdmissionMutation(); const [
+            updateAdmissionStatus,
+            { isLoading: statusLoading },] = useUpdateAdmissionStatusMutation();
     const [deleteAdmission] = useDeleteAdmissionMutation();
     const [updateDocuments] = useUpdateAdmissionDocumentsMutation();
 
@@ -139,13 +139,14 @@ export default function AdminAdmissionPage() {
         }
     };
 
-    if (isLoading) {
+    if (listLoading) {
         return (
             <div className="h-screen flex items-center justify-center">
                 Loading admissions...
             </div>
         );
     }
+
 
     return (
         <div className="min-h-screen bg-gray-100 p-6">
@@ -338,14 +339,54 @@ const AdmissionViewModal = ({ admission, onClose, onPDF, pdfLoading }) => {
     const [editMode, setEditMode] = useState(false);
     const [data, setData] = useState(admission);
 
-    const update = (k, v) => setData({ ...data, [k]: v });
+    const [updateAdmission, { isLoading: updateLoading }] =
+        useUpdateAdmissionMutation();
+
+    useEffect(() => {
+        setData(admission);
+    }, [admission]);
+
+    const update = (k, v) =>
+        setData((prev) => ({ ...prev, [k]: v }));
+
+    const handleSave = async () => {
+        try {
+            await updateAdmission({
+                id: data._id,
+                data: {
+                    studentName: data.studentName,
+                    dob: data.dob,
+                    gender: data.gender,
+                    parentName: data.parentName,
+                    phone: data.phone,
+                    email: data.email,
+                    address: data.address,
+                    visitDate: data.visitDate,
+                    visitTime: data.visitTime,
+                },
+            }).unwrap();
+
+            toast.success("Admission updated successfully");
+            setEditMode(false);
+            onClose();
+        } catch {
+            toast.error("Update failed");
+        }
+    };
 
     return (
         <Modal title="Full Admission Details" onClose={onClose}>
 
-            <div className="flex justify-between mb-4">
-                <div className="text-sm">
-                    Roll: <b>{data.rollNumber}</b> | Status: <b>{data.status}</b>
+            {/* ===== HEADER ===== */}
+            <div className="flex justify-between items-center mb-6">
+                <div className="text-sm space-x-4">
+                    <span>
+                        Roll: <b>{data.rollNumber || "-"}</b>
+                    </span>
+                    <span>
+                        Status:{" "}
+                        <b className="capitalize">{data.status}</b>
+                    </span>
                 </div>
 
                 <div className="flex gap-2">
@@ -360,90 +401,184 @@ const AdmissionViewModal = ({ admission, onClose, onPDF, pdfLoading }) => {
                         onClick={() => onPDF(data)}
                         className="px-3 py-1 bg-indigo-600 text-white text-xs rounded"
                     >
-                        {pdfLoading === data._id ? "Loading..." : "Load Full PDF"}
+                        {pdfLoading === data._id
+                            ? "Loading..."
+                            : "Download PDF"}
                     </button>
                 </div>
             </div>
 
-            <Section title="Student">
+            {/* ===== STUDENT INFO ===== */}
+            <Section title="Student Information">
+                <div className="flex gap-6 items-start">
+                    {/* IMAGE */}
+                    <div className="shrink-0">
+                        <img
+                            src={
+                                data.studentImage?.current?.url ||
+                                "/avatar.png"
+                            }
+                            alt="student"
+                            className="w-32 h-32 rounded-lg object-cover border"
+                        />
+                    </div>
+
+                    {/* DETAILS */}
+                    <Grid>
+                        <Input
+                            label="Student Name"
+                            value={data.studentName || ""}
+                            disabled={!editMode}
+                            onChange={(e) =>
+                                update("studentName", e.target.value)
+                            }
+                        />
+
+                        <Input
+                            label="Class"
+                            value={data.classApplied || ""}
+                            disabled
+                        />
+
+                        <Input
+                            label="Gender"
+                            value={data.gender || ""}
+                            disabled={!editMode}
+                            onChange={(e) =>
+                                update("gender", e.target.value)
+                            }
+                        />
+
+                        <Input
+                            type="date"
+                            label="Date of Birth"
+                            value={
+                                data.dob
+                                    ? data.dob.slice(0, 10)
+                                    : ""
+                            }
+                            disabled={!editMode}
+                            onChange={(e) =>
+                                update("dob", e.target.value)
+                            }
+                        />
+                    </Grid>
+                </div>
+            </Section>
+
+            {/* ===== PARENT INFO ===== */}
+            <Section title="Parent Information">
                 <Grid>
-                    <Input label="Student Name" value={data.studentName} disabled={!editMode}
-                        onChange={(e) => update("studentName", e.target.value)} />
-                    <Input label="Class" value={data.classApplied} disabled />
-                    <Input label="Gender" value={data.gender} disabled={!editMode}
-                        onChange={(e) => update("gender", e.target.value)} />
-                    <Input type="date" label="DOB"
-                        value={data.dob?.slice(0, 10)}
+                    <Input
+                        label="Parent Name"
+                        value={data.parentName || ""}
                         disabled={!editMode}
-                        onChange={(e) => update("dob", e.target.value)} />
-                </Grid>
-
-                {data.studentImage?.current && (
-                    <img
-                        src={data.studentImage.current.url}
-                        className="w-32 h-32 rounded border mt-3 object-cover"
+                        onChange={(e) =>
+                            update("parentName", e.target.value)
+                        }
                     />
-                )}
-            </Section>
 
-            <Section title="Parent">
-                <Grid>
-                    <Input label="Parent Name" value={data.parentName} disabled={!editMode}
-                        onChange={(e) => update("parentName", e.target.value)} />
-                    <Input label="Phone" value={data.phone} disabled={!editMode}
-                        onChange={(e) => update("phone", e.target.value)} />
-                    <Input label="Email" value={data.email} disabled={!editMode}
-                        onChange={(e) => update("email", e.target.value)} />
+                    <Input
+                        label="Phone"
+                        value={data.phone || ""}
+                        disabled={!editMode}
+                        onChange={(e) =>
+                            update("phone", e.target.value)
+                        }
+                    />
+
+                    <Input
+                        label="Email"
+                        value={data.email || ""}
+                        disabled={!editMode}
+                        onChange={(e) =>
+                            update("email", e.target.value)
+                        }
+                    />
                 </Grid>
             </Section>
 
+            {/* ===== ADDRESS ===== */}
             <Section title="Address">
                 <textarea
-                    className="w-full border rounded p-2"
                     rows="3"
+                    className="w-full border rounded p-3 text-sm"
+                    value={data.address || ""}
                     disabled={!editMode}
-                    value={data.address}
-                    onChange={(e) => update("address", e.target.value)}
+                    onChange={(e) =>
+                        update("address", e.target.value)
+                    }
                 />
             </Section>
 
-            <Section title="Visit">
+            {/* ===== VISIT ===== */}
+            <Section title="Visit Appointment">
                 <Grid>
-                    <Input type="date" label="Visit Date"
-                        value={data.visitDate?.slice(0, 10)}
+                    <Input
+                        type="date"
+                        label="Visit Date"
+                        value={data.visitDate || ""}
                         disabled={!editMode}
-                        onChange={(e) => update("visitDate", e.target.value)} />
-                    <Input label="Visit Time"
-                        value={data.visitTime}
+                        onChange={(e) =>
+                            update("visitDate", e.target.value)
+                        }
+                    />
+
+                    <Input
+                        type="time"
+                        label="Visit Time"
+                        value={data.visitTime || ""}
                         disabled={!editMode}
-                        onChange={(e) => update("visitTime", e.target.value)} />
+                        onChange={(e) =>
+                            update("visitTime", e.target.value)
+                        }
+                    />
                 </Grid>
             </Section>
 
+            {/* ===== DOCUMENTS ===== */}
             <Section title="Documents">
-                {Object.entries(data.documents || {}).map(([k, v]) => (
-                    <div key={k} className="flex justify-between bg-gray-50 p-2 rounded mb-2 text-sm">
-                        <span className="capitalize">{k}</span>
-                        {v?.current ? (
-                            <a href={v.current.url} target="_blank" className="text-blue-600 underline">
-                                View
-                            </a>
-                        ) : (
-                            <span className="text-gray-400">Not Uploaded</span>
-                        )}
-                    </div>
-                ))}
+                {[
+                    "birthCertificate",
+                    "reportCard",
+                    "transferCertificate",
+                ].map((key) => {
+                    const doc = data.documents?.[key]?.current;
+                    return (
+                        <div
+                            key={key}
+                            className="flex justify-between items-center bg-gray-50 p-3 rounded mb-2 text-sm"
+                        >
+                            <span className="capitalize">
+                                {key.replace(/([A-Z])/g, " $1")}
+                            </span>
+
+                            {doc?.url ? (
+                                <a
+                                    href={doc.url}
+                                    target="_blank"
+                                    className="text-blue-600 underline"
+                                >
+                                    View
+                                </a>
+                            ) : (
+                                <span className="text-gray-400">
+                                    Not Uploaded
+                                </span>
+                            )}
+                        </div>
+                    );
+                })}
             </Section>
 
+            {/* ===== SAVE BUTTON ===== */}
             {editMode && (
                 <button
-                    onClick={() => {
-                        toast.success("Update API ready (connect backend)");
-                        setEditMode(false);
-                    }}
-                    className="w-full py-2 bg-emerald-600 text-white rounded"
+                    onClick={handleSave}
+                    disabled={updateLoading}
+                    className="w-full mt-4 py-2 bg-emerald-600 text-white rounded"
                 >
-                    Save Changes
+                    {updateLoading ? "Saving..." : "Save Changes"}
                 </button>
             )}
         </Modal>

@@ -1,23 +1,122 @@
 const mongoose = require("mongoose");
 
+/* ================= DOCUMENT VERSION ================= */
+const documentVersionSchema = new mongoose.Schema({
+  url: {
+    type: String,
+    required: true,
+  },
+  public_id: {
+    type: String,
+    required: true,
+  },
+  uploadedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+/* ================= DOCUMENT MAIN ================= */
+const singleDocumentSchema = new mongoose.Schema({
+  current: {
+    type: documentVersionSchema,
+    default: null,
+  },
+  history: {
+    type: [documentVersionSchema],
+    default: [],
+  },
+});
+
 /* ================= ADMISSION ================= */
 const admissionSchema = new mongoose.Schema(
   {
-    studentName: String,
-    dob: Date,
-    gender: String,
-    classApplied: String,
-
-    rollNumber: {
-      type: Number,
-      default: null, // 🔥 VERY IMPORTANT
+    /* ========== STUDENT INFO ========== */
+    studentName: {
+      type: String,
+      required: true,
+      trim: true,
     },
 
-    parentName: String,
-    phone: String,
-    email: String,
-    address: String,
+    dob: {
+      type: Date,
+      required: true,
+    },
 
+    gender: {
+      type: String,
+      enum: ["Male", "Female"],
+      required: true,
+    },
+
+    /* ========== CLASS ========== */
+    classApplied: {
+      type: String,
+      enum: ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8"],
+      required: true,
+    },
+
+    /* ========== CLASS-WISE ROLL NUMBER ========== */
+    rollNumber: {
+      type: Number,
+      default: null,
+    },
+
+    /* ========== STUDENT IMAGE ========== */
+    studentImage: {
+      current: {
+        type: documentVersionSchema,
+        default: null,
+      },
+      history: {
+        type: [documentVersionSchema],
+        default: [],
+      },
+    },
+
+    /* ========== PARENT INFO ========== */
+    parentName: {
+      type: String,
+      required: true,
+    },
+
+    phone: {
+      type: String,
+      required: true,
+    },
+
+    email: {
+      type: String,
+      lowercase: true,
+    },
+
+    /* ========== ADDRESS ========== */
+    address: {
+      type: String,
+      required: true,
+    },
+
+    /* ========== DOCUMENTS ========== */
+    documents: {
+      birthCertificate: {
+        type: singleDocumentSchema,
+        default: () => ({}),
+      },
+      reportCard: {
+        type: singleDocumentSchema,
+        default: () => ({}),
+      },
+      transferCertificate: {
+        type: singleDocumentSchema,
+        default: () => ({}),
+      },
+    },
+
+    /* ========== VISIT ========== */
+    visitDate: Date,
+    visitTime: String,
+
+    /* ========== STATUS ========== */
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
@@ -65,7 +164,7 @@ admissionSchema.pre("save", async function (next) {
   }
 });
 
-/* ================= 🔥 PARTIAL UNIQUE INDEX ================= */
+/* ================= UNIQUE INDEX (🔥 MOST IMPORTANT) ================= */
 admissionSchema.index(
   { classApplied: 1, rollNumber: 1 },
   {
@@ -76,4 +175,6 @@ admissionSchema.index(
   }
 );
 
-module.exports = mongoose.model("Admission", admissionSchema);
+
+const Admission = mongoose.model("Admission", admissionSchema);
+module.exports = Admission;

@@ -246,6 +246,7 @@ class admissionController {
   /* ================= UPDATE DOCUMENTS ================= */
   static updateDocuments = async (req, res) => {
     try {
+      // console.log("FILES:", req.files); // 🔍 DEBUG
       const admission = await admissionModel.findById(req.params.id);
       if (!admission) {
         return res.status(404).json({
@@ -254,7 +255,7 @@ class admissionController {
         });
       }
 
-      if (!req.files) {
+      if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).json({
           success: false,
           message: "No files uploaded",
@@ -266,44 +267,61 @@ class admissionController {
         "reportCard",
         "transferCertificate",
       ]) {
-        if (req.files[field]) {
-          const upload = await cloudinary.uploader.upload(
-            req.files[field].tempFilePath,
-            { folder: "admissions/documents" }
-          );
+        const file = req.files[field];
 
-          admission.documents[field] =
-            admission.documents[field] || { history: [] };
+        if (!file) continue;
 
-          if (admission.documents[field].current) {
-            admission.documents[field].history.push(
-              admission.documents[field].current
-            );
-          }
+        // 🔥 SAFETY: tempFilePath fallback
+        const filePath = file.tempFilePath || file.path;
 
-          admission.documents[field].current = {
-            url: upload.secure_url,
-            public_id: upload.public_id,
-            uploadedAt: new Date(),
-          };
+        if (!filePath) {
+          return res.status(400).json({
+            success: false,
+            message: `Invalid file for ${field}`,
+          });
         }
+
+        console.log("Uploading:", field, filePath);
+
+        const upload = await cloudinary.uploader.upload(filePath, {
+          folder: "admissions/documents",
+          resource_type: "auto", // ✅ pdf / image both
+        });
+
+        admission.documents[field] =
+          admission.documents[field] || { history: [] };
+
+        if (admission.documents[field].current) {
+          admission.documents[field].history.push(
+            admission.documents[field].current
+          );
+        }
+
+        admission.documents[field].current = {
+          url: upload.secure_url,
+          public_id: upload.public_id,
+          uploadedAt: new Date(),
+        };
       }
 
       admission.status = "pending";
       await admission.save();
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
-        message: "Documents updated",
+        message: "Documents updated successfully",
         data: admission,
       });
+
     } catch (error) {
-      res.status(500).json({
+      console.error("DOCUMENT UPDATE ERROR:", error);
+      return res.status(500).json({
         success: false,
         message: error.message,
       });
     }
   };
+
 
   /* ================= DELETE DOCUMENT ================= */
   static deleteDocument = async (req, res) => {
