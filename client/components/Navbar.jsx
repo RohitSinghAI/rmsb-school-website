@@ -3,17 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { useGetAdminProfileQuery } from "@/redux/features/adminAuth/adminAuthApi";
 import { useGetNavbarQuery } from "@/redux/features/navbar/page";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  /* AUTH */
-  const { data, isLoading } = useGetAdminProfileQuery();
-  const isLoggedIn = !!data?.user;
 
   /* NAVBAR DATA */
   const { data: navbarData } = useGetNavbarQuery();
@@ -33,7 +28,7 @@ export default function Navbar() {
   const marqueeItems =
     navbar?.marqueeItems?.filter(i => i.isActive).map(i => i.text) || [];
 
-  /* SCROLL EFFECT (ONLY SHADOW) */
+  /* SCROLL EFFECT */
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
@@ -91,8 +86,8 @@ export default function Navbar() {
             {brand?.logoImage?.url ? (
               <img
                 src={brand.logoImage.url}
-                alt={brand?.title}
-                className="w-11 h-11 rounded-full bg-[#fdfcf9] object-contain"
+                alt={brand?.title || "Logo"}
+                className="w-11 h-11 rounded-full object-contain"
               />
             ) : (
               <div className="w-11 h-11 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
@@ -118,24 +113,24 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm font-medium transition ${active
+                  className={`text-sm font-medium transition ${
+                    active
                       ? "text-indigo-600"
                       : "text-gray-700 hover:text-indigo-600"
-                    }`}
+                  }`}
                 >
                   {link.label}
                 </Link>
               );
             })}
 
-            {!isLoading && !isLoggedIn && (
-              <Link
-                href="/admin/login"
-                className="ml-3 px-4 py-2 rounded-full text-sm border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white transition"
-              >
-                Login
-              </Link>
-            )}
+            {/* ✅ LOGIN ALWAYS VISIBLE */}
+            <Link
+              href="/admin/login"
+              className="ml-3 px-4 py-2 rounded-full text-sm border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white transition"
+            >
+              Login
+            </Link>
           </nav>
 
           {/* MOBILE BUTTON */}
@@ -155,23 +150,23 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`block ${pathname === link.href
+                  className={`block ${
+                    pathname === link.href
                       ? "text-indigo-600 font-semibold"
                       : "text-gray-700"
-                    }`}
+                  }`}
                 >
                   {link.label}
                 </Link>
               ))}
 
-              {!isLoading && !isLoggedIn && (
-                <Link
-                  href="/admin/login"
-                  className="block text-indigo-600 font-medium"
-                >
-                  Login
-                </Link>
-              )}
+              {/* ✅ LOGIN ALWAYS VISIBLE (MOBILE) */}
+              <Link
+                href="/admin/login"
+                className="block text-indigo-600 font-medium"
+              >
+                Login
+              </Link>
             </div>
           </div>
         )}

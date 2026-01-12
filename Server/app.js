@@ -14,7 +14,12 @@ const PORT = process.env.PORT || 4000;
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
 
 // ================= SECURITY =================
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
 
@@ -34,14 +39,10 @@ app.use(
       }
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // 🔥 FIX
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type"],
   })
 );
-
-// Preflight support
-app.options(/.*/, cors());
-
 
 // ================= MIDDLEWARE =================
 app.use(cookieParser());
@@ -61,12 +62,11 @@ app.use(
 db();
 
 // ================= ROUTES =================
-const adminRoutes = require("./routes/adminRoutes");
-app.use("/api/admin", adminRoutes);
+app.use("/api/admin", require("./routes/adminRoutes"));
 
 // ================= TEST ROUTE =================
 app.get("/", (req, res) => {
-  res.send("Server is running");
+  res.send("Server is running..");
 });
 
 // ================= ERROR HANDLER =================
@@ -80,5 +80,5 @@ app.use((err, req, res, next) => {
 
 // ================= SERVER =================
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });

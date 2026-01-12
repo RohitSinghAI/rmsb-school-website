@@ -2,6 +2,7 @@ import "./globals.css";
 import Providers from "./providers";
 import LayoutWrapper from "./layoutWrapper";
 import ClientToaster from "@/clientToaster";
+import AuthSessionHandler from "./AuthSessionHandler";
 
 import { Poppins, Playfair_Display } from "next/font/google";
 
@@ -21,7 +22,7 @@ export const metadata = {
   title: "Best School in Bhander | RMSB - School",
   description: "Savitribai Phule Mission School Bhander",
   icons: {
-    // icon: "/favicon.ico",      // 👈 TAB ICON
+    // icon: "/favicon.ico",
     // shortcut: "/favicon.ico",
     // apple: "/faviconnn.ico",
   },
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${poppins.variable} ${playfair.variable}`}>
         <Providers>
+          <AuthSessionHandler />
           <LayoutWrapper>{children}</LayoutWrapper>
           <ClientToaster />
         </Providers>

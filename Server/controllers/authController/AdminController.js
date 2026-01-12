@@ -3,7 +3,9 @@ const crypto = require("crypto");
 const Admin = require("../../models/Admin");
 const sendEmail = require("../../utils/sendEmail");
 
-const SECRET = process.env.JWT_SECRET || "pn1234";
+if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is missing");
+}
 
 class AdminController {
 
@@ -34,6 +36,7 @@ class AdminController {
         try {
             const { email, password } = req.body;
 
+            // 1️⃣ Validation
             if (!email || !password) {
                 return res.status(400).json({
                     success: false,
@@ -41,6 +44,7 @@ class AdminController {
                 });
             }
 
+            // 2️⃣ Find admin
             const user = await Admin.findOne({ email: email.toLowerCase() }).select("+password");
 
             if (!user || !(await user.comparePassword(password))) {
@@ -50,7 +54,7 @@ class AdminController {
                 });
             }
 
-            // 🔒 ADMIN ROLE CHECK
+            // 3️⃣ Admin role check
             if (user.role !== "admin") {
                 return res.status(403).json({
                     success: false,
@@ -58,23 +62,28 @@ class AdminController {
                 });
             }
 
+            // 4️⃣ JWT_SECRET check
             if (!process.env.JWT_SECRET) {
                 throw new Error("JWT_SECRET is not defined");
             }
 
+            // 5️⃣ Create JWT (short expiry recommended)
             const token = jwt.sign(
                 { id: user._id, role: user.role },
                 process.env.JWT_SECRET,
-                { expiresIn: "7d" }
+                { expiresIn: "10m" } // optional but secure
             );
 
+            // 🔐 6️⃣ SESSION COOKIE (MOST IMPORTANT CHANGE)
             res.cookie("token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-                maxAge: 7 * 24 * 60 * 60 * 1000,
+                path: "/",
+                // ❌ maxAge REMOVE kar diya
             });
 
+            // 7️⃣ Response
             res.status(200).json({
                 success: true,
                 message: "Admin login successful",
@@ -85,16 +94,25 @@ class AdminController {
                     role: user.role,
                 },
             });
+
         } catch (error) {
-            next(error); // goes to global error handler
+            next(error);
         }
     };
-
-
+    
     // LOGOUT
     static logout = async (req, res) => {
-        res.clearCookie("token");
-        res.json({ success: true, message: "Logout successful" });
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            path: "/",
+        });
+
+        res.json({
+            success: true,
+            message: "Logout successful",
+        });
     };
 
     // PROFILE

@@ -2,10 +2,15 @@ import { NextResponse } from "next/server";
 
 export function middleware(req) {
   const token = req.cookies.get("token")?.value;
-  const url = req.nextUrl.pathname;
+  const pathname = req.nextUrl.pathname;
 
-  // 🔒 Protect admin dashboard
-  if (url.startsWith("/admin/dashboard")) {
+  // ✅ LOGIN PAGE HAMESHA ALLOW
+  if (pathname === "/admin/login") {
+    return NextResponse.next();
+  }
+
+  // 🔒 ADMIN DASHBOARD PROTECTION
+  if (pathname.startsWith("/admin/dashboard")) {
     if (!token) {
       return NextResponse.redirect(new URL("/admin/login", req.url));
     }
@@ -15,5 +20,5 @@ export function middleware(req) {
 }
 
 export const config = {
-  matcher: ["/admin/dashboard/:path*"],
+  matcher: ["/admin/:path*"],
 };
