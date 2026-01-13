@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useGetAdminProfileQuery } from "@/redux/features/adminAuth/adminAuthApi";
 
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminHeader from "@/components/AdminHeader";
@@ -9,30 +10,31 @@ import AdminFooter from "@/components/AdminFooter";
 
 export default function DashboardClientLayout({ children }) {
   const router = useRouter();
-  const [authorized, setAuthorized] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  // 🔥 BACKEND AUTH CHECK (COOKIE BASED)
+  const { data, isLoading, isError } = useGetAdminProfileQuery();
 
   useEffect(() => {
-    // 🔥 SINGLE SOURCE OF TRUTH
-    const token = localStorage.getItem("adminToken");
-
-    if (!token) {
-      router.replace("/admin/login");
-    } else {
-      setAuthorized(true);
+    if (!isLoading) {
+      if (isError || !data?.success) {
+        router.replace("/admin/login");
+      } else {
+        setReady(true);
+      }
     }
-  }, [router]);
+  }, [isLoading, isError, data, router]);
 
-  if (!authorized) {
-    return null;
+  // ⛔ jab tak backend confirm na kare
+  if (isLoading || !ready) {
+    return null; // loader rakh sakte ho
   }
 
   return (
     <div className="bg-gray-100 min-h-screen flex">
       <AdminSidebar />
 
-      {/* RIGHT CONTENT */}
       <div className="ml-0 md:ml-72 flex flex-col min-h-screen w-full">
-        {/* mobile sidebar bar height */}
         <div className="md:hidden h-10" />
 
         <AdminHeader />
