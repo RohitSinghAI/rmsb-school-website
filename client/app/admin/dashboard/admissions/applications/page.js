@@ -47,7 +47,7 @@ const Dropzone = ({ label, onFile }) => (
     </label>
 );
 
-export default function AdminAdmissionPage() {
+export default function AdmissionPage() {
     const { data, isLoading: listLoading } = useGetAllAdmissionsQuery();
     const { data: navbarData } = useGetNavbarQuery();
     const navbar = navbarData?.navbar;
@@ -201,7 +201,6 @@ export default function AdminAdmissionPage() {
             </div>
         );
     }
-
 
     return (
         <div className="min-h-screen bg-gray-100 p-6">

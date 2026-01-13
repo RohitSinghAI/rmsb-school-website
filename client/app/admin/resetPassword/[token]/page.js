@@ -1,18 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast, Toaster } from "react-hot-toast";
 import { useResetPasswordMutation } from "@/redux/features/adminAuth/adminAuthApi";
 
-export default function ResetPasswordPage() {
+export default function ResetPasswordPage({ params }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const { token } = params;
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -20,13 +18,6 @@ export default function ResetPasswordPage() {
 
   const strongPassword =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-
-  useEffect(() => {
-    if (!token) {
-      toast.error("Invalid or missing reset token");
-      router.push("/admin/forgot-password");
-    }
-  }, [token, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,9 +40,7 @@ export default function ResetPasswordPage() {
         router.push("/admin/login");
       }, 1500);
     } catch (err) {
-      toast.error(
-        err?.data?.message || err?.error || "Reset password failed"
-      );
+      toast.error(err?.data?.message || "Reset password failed");
     }
   };
 

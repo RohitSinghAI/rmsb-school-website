@@ -22,7 +22,7 @@ export default function AdminHeader() {
     try {
       await logoutAdmin().unwrap();
       dispatch(clearAdmin());
-      router.push("/admin/login");
+      router.push("/");
     } catch (err) {
       console.error("Logout failed", err);
     }

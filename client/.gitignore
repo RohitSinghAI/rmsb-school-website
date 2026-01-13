@@ -1,8 +1,8 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
+# ========================
+# Dependencies
+# ========================
+node_modules/
+.pnp
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -10,72 +10,37 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
 # ========================
-# Node modules
+# Build outputs
 # ========================
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+.next/
+out/
+build/
+dist/
+.vite/
+.cache/
+
+# ========================
+# Coverage / Tests
+# ========================
+coverage/
 
 # ========================
 # Environment variables
 # ========================
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# ========================
-# Build outputs
-# ========================
-build/
-dist/
-out/
-
-# ========================
-# React / Vite / Next
-# ========================
-.vite/
-.next/
-.cache/
+.env.*
+!.env.example
 
 # ========================
 # Logs
 # ========================
 logs/
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
 # ========================
 # OS files
@@ -94,9 +59,9 @@ Thumbs.db
 *.sln
 
 # ========================
-# Coverage / Tests
+# Vercel
 # ========================
-coverage/
+.vercel
 
 # ========================
 # Temporary files
@@ -105,8 +70,7 @@ tmp/
 temp/
 
 # ========================
-# Optional lock files
-# (uncomment if needed)
+# TypeScript
 # ========================
-# package-lock.json
-# yarn.lock
+*.tsbuildinfo
+next-env.d.ts

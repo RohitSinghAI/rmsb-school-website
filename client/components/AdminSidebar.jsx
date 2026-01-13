@@ -122,7 +122,6 @@ export default function AdminSidebar() {
                 <NavItem href="/admin/dashboard/about/journeyTimeline" label="Journey Timeline" close={closeMobile} />
                 <NavItem href="/admin/dashboard/about/programsCurriculum" label="Programs Curriculum" close={closeMobile} />
                 <NavItem href="/admin/dashboard/about/facility" label="Facility" close={closeMobile} />
-                <NavItem href="/admin/dashboard/about/alumniStats" label="AlumniStats" close={closeMobile} />
               </Folder>
 
               <Folder title="Teachers" open={menus.homeTeachers} toggle={() => toggleMenu("homeTeachers")} nested>

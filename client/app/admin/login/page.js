@@ -101,7 +101,7 @@ export default function AdminLoginPage() {
 
           <p>
             <button
-              onClick={() => router.push("/admin/forgot-password")}
+              onClick={() => router.push("/admin/forgotPassword")}
               className="text-sm text-gray-600 hover:underline"
             >
               Forgot Password?

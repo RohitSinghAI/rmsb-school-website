@@ -1,12 +1,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // ❌ output: "export"  <-- ye kabhi bhi add mat karna (ADMIN dashboard ke liye)
+
   images: {
-    domains: [
-      'res.cloudinary.com',
-      'localhost',
-      'your-backend-domain.com'
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "https",
+        hostname: "**",
+      },
     ],
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

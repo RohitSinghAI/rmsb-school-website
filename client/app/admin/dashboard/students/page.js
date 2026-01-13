@@ -1,16 +1,22 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useGetAllAdmissionsQuery } from "@/redux/features/admission/admissionApi";
-import { useSearchParams } from "next/navigation";
 
-export default function AdminStudentsPage() {
-  const searchParams = useSearchParams();
-  const selectedClass = searchParams.get("class");
+export const dynamic = "force-dynamic"; // extra safety
+
+export default function StudentsPage() {
+  const [selectedClass, setSelectedClass] = useState(null);
+
+  // 🔥 READ QUERY PARAM SAFELY (CLIENT ONLY)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setSelectedClass(params.get("class"));
+  }, []);
 
   const { data, isLoading } = useGetAllAdmissionsQuery();
   const admissions = data?.data || [];
 
-  /* ================= FILTER STUDENTS ================= */
   const students = admissions.filter(
     (a) =>
       a.status === "approved" &&
@@ -27,8 +33,6 @@ export default function AdminStudentsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-
-      {/* HEADER */}
       <div className="bg-white rounded-xl shadow p-6 mb-6 flex justify-between items-center">
         <div>
           <h1 className="text-xl font-bold">Students List</h1>
@@ -44,7 +48,6 @@ export default function AdminStudentsPage() {
         </p>
       </div>
 
-      {/* TABLE */}
       <div className="bg-white rounded-xl shadow overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-gray-100">
