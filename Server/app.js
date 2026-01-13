@@ -25,8 +25,7 @@ app.set("trust proxy", 1);
 
 // ================= CORS =================
 const allowedOrigins = [...new Set([
-  "http://localhost:3000",
-  CLIENT_URL,
+  "http://localhost:3000", CLIENT_URL,
 ])];
 
 app.use(
