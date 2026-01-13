@@ -8,7 +8,7 @@ import {
     useUpdateAdmissionStatusMutation,
     usePromoteAdmissionMutation,
 } from "@/redux/features/admission/admissionApi";
-import { useMemo } from "react";
+
 import { useGetNavbarQuery } from "@/redux/features/navbar/page";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
@@ -46,18 +46,6 @@ const Dropzone = ({ label, onFile }) => (
         />
     </label>
 );
-const filtered = useMemo(() => {
-    const s = search.toLowerCase();
-    return admissions.filter((a) => (
-        (
-            a.studentName?.toLowerCase().includes(s) ||
-            a.phone?.includes(search) ||
-            String(a.rollNumber || "").includes(search)
-        ) &&
-        (statusFilter === "all" || a.status === statusFilter) &&
-        (classFilter === "all" || a.classApplied === classFilter)
-    ));
-}, [admissions, search, statusFilter, classFilter]);
 
 export default function AdmissionPage() {
     const { data, isLoading: listLoading } = useGetAllAdmissionsQuery();
@@ -79,8 +67,6 @@ export default function AdmissionPage() {
 
     const [selectedIds, setSelectedIds] = useState([]);
     const [bulkClass, setBulkClass] = useState("");
-    const [statusId, setStatusId] = useState(null);
-
 
     const [docFiles, setDocFiles] = useState({});
     const [docLoading, setDocLoading] = useState(false);
@@ -120,16 +106,17 @@ export default function AdmissionPage() {
 
     const handleStatus = async (id, status) => {
         try {
-            setStatusId(id);
-            await updateAdmissionStatus({ id, status }).unwrap();
-            toast.success(`Admission ${status}`);
-        } catch {
+            await updateAdmissionStatus({
+                id,
+                status,
+            }).unwrap();
+
+            toast.success(`Admission ${status} & email sent`);
+        } catch (err) {
+            console.error(err);
             toast.error("Action failed");
-        } finally {
-            setStatusId(null);
         }
     };
-
 
     const handleDelete = async (id) => {
         if (!confirm("Delete admission?")) return;
@@ -293,8 +280,8 @@ export default function AdmissionPage() {
                         onClick={handleBulkPromote}
                         disabled={!bulkClass}
                         className={`w-full md:w-auto px-5 py-2 rounded text-white transition ${bulkClass
-                            ? "bg-emerald-600 hover:bg-emerald-700"
-                            : "bg-gray-300 cursor-not-allowed"
+                                ? "bg-emerald-600 hover:bg-emerald-700"
+                                : "bg-gray-300 cursor-not-allowed"
                             }`}
                     >
                         Promote Selected
@@ -347,15 +334,15 @@ export default function AdmissionPage() {
                                 <td className="text-center">
                                     <input
                                         type="checkbox"
-                                        checked={
-                                            approvedIds.length > 0 &&
-                                            approvedIds.every(id => selectedIds.includes(id))
-                                        }
+                                        checked={selectedIds.includes(a._id)}
+                                        disabled={a.status !== "approved" || a.isPromoted}
                                         onChange={(e) => {
                                             if (e.target.checked) {
-                                                setSelectedIds(approvedIds);
+                                                setSelectedIds([...selectedIds, a._id]);
                                             } else {
-                                                setSelectedIds([]);
+                                                setSelectedIds(
+                                                    selectedIds.filter((id) => id !== a._id)
+                                                );
                                             }
                                         }}
                                     />
@@ -364,9 +351,9 @@ export default function AdmissionPage() {
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">
                                         <img
-                                            src={a.studentImage?.current?.url || "/default-avatar.png"}
-                                            onError={(e) => (e.currentTarget.src = "/default-avatar.png")}
+                                            src={a.studentImage?.current?.url || "/avatar.png"}
                                             className="w-10 h-10 rounded-full object-cover border"
+                                            alt="student"
                                         />
                                         <div>
                                             <p className="font-semibold">{a.studentName}</p>
@@ -398,18 +385,19 @@ export default function AdmissionPage() {
                                         </Btn>
                                         <Btn
                                             green
-                                            disabled={a.status === "approved" || statusId === a._id}
+                                            disabled={a.status === "approved" || statusLoading}
                                             onClick={() => handleStatus(a._id, "approved")}
                                         >
-                                            {statusId === a._id ? "..." : "✓"}
+                                            {statusLoading ? "..." : "✓"}
                                         </Btn>
+
 
                                         <Btn
                                             red
-                                            disabled={a.status === "rejected" || statusId === a._id}
+                                            disabled={a.status === "rejected" || statusLoading}
                                             onClick={() => handleStatus(a._id, "rejected")}
                                         >
-                                            {statusId === a._id ? "..." : "✕"}
+                                            {statusLoading ? "..." : "✕"}
                                         </Btn>
                                         <Btn dark onClick={() => handleDelete(a._id)}>🗑</Btn>
                                     </div>
