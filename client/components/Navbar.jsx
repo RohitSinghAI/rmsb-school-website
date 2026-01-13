@@ -113,11 +113,10 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm font-medium transition ${
-                    active
+                  className={`text-sm font-medium transition ${active
                       ? "text-indigo-600"
                       : "text-gray-700 hover:text-indigo-600"
-                  }`}
+                    }`}
                 >
                   {link.label}
                 </Link>
@@ -150,11 +149,10 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`block ${
-                    pathname === link.href
+                  className={`block ${pathname === link.href
                       ? "text-indigo-600 font-semibold"
                       : "text-gray-700"
-                  }`}
+                    }`}
                 >
                   {link.label}
                 </Link>
@@ -173,7 +171,7 @@ export default function Navbar() {
       </header>
 
       {/* SAFE OFFSET */}
-      <div className="h-[96px]" />
+      <div className="h-[75px]" />
     </>
   );
 }

@@ -56,6 +56,24 @@ const admissionSchema = new mongoose.Schema(
       required: true,
     },
 
+    /* ========== PROMOTION INFO ========== */
+    previousClass: {
+      type: String,
+      enum: ["Nursery", "LKG", "UKG", "1", "2", "3", "4", "5", "6", "7", "8"],
+      default: null,
+    },
+
+    promotedFrom: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Admission",
+      default: null,
+    },
+
+    isPromoted: {
+      type: Boolean,
+      default: false,
+    },
+
     /* ========== CLASS-WISE ROLL NUMBER ========== */
     rollNumber: {
       type: Number,

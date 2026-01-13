@@ -2,17 +2,29 @@ import { NextResponse } from "next/server";
 
 export function middleware(req) {
   const token = req.cookies.get("token")?.value;
-  const pathname = req.nextUrl.pathname;
+  const { pathname } = req.nextUrl;
 
-  // ✅ LOGIN PAGE HAMESHA ALLOW
-  if (pathname === "/admin/login") {
+  /* ================= ALWAYS ALLOW LOGIN ================= */
+  if (pathname.startsWith("/admin/login")) {
     return NextResponse.next();
   }
 
-  // 🔒 ADMIN DASHBOARD PROTECTION
+  /* ================= IGNORE NEXT / STATIC FILES ================= */
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/favicon.ico") ||
+    pathname.startsWith("/images")
+  ) {
+    return NextResponse.next();
+  }
+
+  /* ================= PROTECT DASHBOARD ================= */
   if (pathname.startsWith("/admin/dashboard")) {
+    // ⚠️ Soft guard: sirf token existence check
     if (!token) {
-      return NextResponse.redirect(new URL("/admin/login", req.url));
+      const loginUrl = new URL("/admin/login", req.url);
+      loginUrl.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(loginUrl);
     }
   }
 

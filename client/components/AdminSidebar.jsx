@@ -11,6 +11,7 @@ import {
   FiSettings,
   FiUser,
   FiLogOut,
+  FiPhone
 } from "react-icons/fi";
 
 import { useLogoutAdminMutation } from "@/redux/features/adminAuth/adminAuthApi";
@@ -102,7 +103,7 @@ export default function AdminSidebar() {
             <NavItem href="/admin/dashboard" icon={<FiGrid />} label="Dashboard" close={closeMobile} />
 
             <Folder title="Home Section" icon={<FiHome />} open={menus.home} toggle={() => toggleMenu("home")}>
-              <Folder title="Navar" open={menus.homeNavbar} toggle={() => toggleMenu("homeNavbar")} nested>
+              <Folder title="Navbar" open={menus.homeNavbar} toggle={() => toggleMenu("homeNavbar")} nested>
                 <NavItem href="/admin/dashboard/navbar" label="Navbar" close={closeMobile} />
               </Folder>
 
@@ -148,14 +149,16 @@ export default function AdminSidebar() {
               <NavItem href="/admin/classes" label="Classes" close={closeMobile} /> */}
             </Folder>
 
-            <Folder title="Finance" icon={<FiDollarSign />} open={menus.finance} toggle={() => toggleMenu("finance")}>
+            {/* <Folder title="Finance" icon={<FiDollarSign />} open={menus.finance} toggle={() => toggleMenu("finance")}>
               <NavItem href="/admin/fees" label="Fees" close={closeMobile} />
               <NavItem href="/admin/payments" label="Payments" close={closeMobile} />
-            </Folder>
+            </Folder> */}
 
             <Folder title="Settings" icon={<FiSettings />} open={menus.settings} toggle={() => toggleMenu("settings")}>
               <NavItem href="/admin/dashboard/profile" icon={<FiUser />} label="Profile" close={closeMobile} />
             </Folder>
+
+             <NavItem href="/admin/dashboard/contact/contact" icon={<FiPhone />} label="Contact" close={closeMobile} />
 
             <button
               onClick={handleLogout}

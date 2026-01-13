@@ -6,6 +6,7 @@ import {
     useUpdateAdmissionDocumentsMutation,
     useUpdateAdmissionMutation,
     useUpdateAdmissionStatusMutation,
+    usePromoteAdmissionMutation,
 } from "@/redux/features/admission/admissionApi";
 
 import { useGetNavbarQuery } from "@/redux/features/navbar/page";
@@ -51,10 +52,8 @@ export default function AdminAdmissionPage() {
     const { data: navbarData } = useGetNavbarQuery();
     const navbar = navbarData?.navbar;
 
-    const [updateAdmission, { isLoading: updateLoading }] =
-        useUpdateAdmissionMutation(); const [
-            updateAdmissionStatus,
-            { isLoading: statusLoading },] = useUpdateAdmissionStatusMutation();
+    const [updateAdmission, { isLoading: updateLoading }] = useUpdateAdmissionMutation();
+    const [updateAdmissionStatus, { isLoading: statusLoading },] = useUpdateAdmissionStatusMutation();
     const [deleteAdmission] = useDeleteAdmissionMutation();
     const [updateDocuments] = useUpdateAdmissionDocumentsMutation();
 
@@ -66,9 +65,17 @@ export default function AdminAdmissionPage() {
     const [edit, setEdit] = useState(null);
     const [exportOpen, setExportOpen] = useState(false);
 
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [bulkClass, setBulkClass] = useState("");
+
     const [docFiles, setDocFiles] = useState({});
     const [docLoading, setDocLoading] = useState(false);
     const [pdfLoading, setPdfLoading] = useState(null);
+
+    /* ================= PROMOTE ================= */
+    const [promoteAdmission, { isLoading: promoteLoading }] = usePromoteAdmissionMutation();
+    const [promote, setPromote] = useState(null);
+    const [nextClass, setNextClass] = useState("");
 
     const admissions = data?.data || [];
 
@@ -139,6 +146,54 @@ export default function AdminAdmissionPage() {
         }
     };
 
+    const handlePromote = async () => {
+        if (!nextClass) {
+            toast.error("Please select next class");
+            return;
+        }
+
+        try {
+            await promoteAdmission({
+                id: promote._id,
+                nextClass,
+            }).unwrap();
+
+            toast.success("Student promoted successfully");
+            setPromote(null);
+            setNextClass("");
+        } catch (err) {
+            console.error(err);
+            toast.error("Promotion failed");
+        }
+    };
+    const handleBulkPromote = async () => {
+        if (!bulkClass) {
+            toast.error("Please select next class");
+            return;
+        }
+
+        try {
+            await Promise.all(
+                selectedIds.map((id) =>
+                    promoteAdmission({
+                        id,
+                        nextClass: bulkClass,
+                    }).unwrap()
+                )
+            );
+
+            toast.success(
+                `${selectedIds.length} students promoted successfully`
+            );
+
+            setSelectedIds([]);
+            setBulkClass("");
+        } catch (err) {
+            console.error("BULK PROMOTE ERROR:", err);
+            toast.error("Bulk promotion failed");
+        }
+    };
+
     if (listLoading) {
         return (
             <div className="h-screen flex items-center justify-center">
@@ -192,12 +247,77 @@ export default function AdminAdmissionPage() {
                     Download PDF
                 </button>
             </div>
+            {/* ================= Promote Selected ================= */}
+            {selectedIds.length > 0 && (
+                <div className="bg-yellow-300 p-4 m-4 rounded-xl shadow mb-4 flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between">
+
+                    {/* COUNT */}
+                    <div className="text-sm font-semibold text-center md:text-left">
+                        Selected Students: {selectedIds.length}
+                    </div>
+
+                    {/* SELECT */}
+                    <select
+                        className="w-full md:w-auto border rounded px-3 py-2"
+                        value={bulkClass}
+                        onChange={(e) => setBulkClass(e.target.value)}
+                    >
+                        <option value="">Select Next Class</option>
+                        <option value="Nursery">Nursery</option>
+                        <option value="LKG">LKG</option>
+                        <option value="UKG">UKG</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select>
+
+                    {/* BUTTON */}
+                    <button
+                        onClick={handleBulkPromote}
+                        disabled={!bulkClass}
+                        className={`w-full md:w-auto px-5 py-2 rounded text-white transition ${bulkClass
+                                ? "bg-emerald-600 hover:bg-emerald-700"
+                                : "bg-gray-300 cursor-not-allowed"
+                            }`}
+                    >
+                        Promote Selected
+                    </button>
+
+                </div>
+            )}
 
             {/* ================= TABLE ================= */}
             <div className="bg-white rounded-xl shadow overflow-x-auto">
                 <table className="min-w-[1100px] w-full text-sm">
                     <thead className="bg-gray-100">
                         <tr>
+                            <th>#</th>
+                            <th className="p-4 text-center">
+                                <input
+                                    type="checkbox"
+                                    checked={
+                                        filtered.filter(a => a.status === "approved").length > 0 &&
+                                        selectedIds.length ===
+                                        filtered.filter(a => a.status === "approved").length
+                                    }
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setSelectedIds(
+                                                filtered
+                                                    .filter(a => a.status === "approved")
+                                                    .map(a => a._id)
+                                            );
+                                        } else {
+                                            setSelectedIds([]);
+                                        }
+                                    }}
+                                />
+                            </th>
                             <th className="p-4">Student</th>
                             <th>Class</th>
                             <th>Phone</th>
@@ -207,8 +327,28 @@ export default function AdminAdmissionPage() {
                     </thead>
 
                     <tbody>
-                        {filtered.map((a) => (
+                        {filtered.map((a, index) => (
                             <tr key={a._id} className="border-t">
+                                <td className="text-center font-semibold">
+                                    {index + 1}
+                                </td>
+                                <td className="text-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedIds.includes(a._id)}
+                                        disabled={a.status !== "approved" || a.isPromoted}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedIds([...selectedIds, a._id]);
+                                            } else {
+                                                setSelectedIds(
+                                                    selectedIds.filter((id) => id !== a._id)
+                                                );
+                                            }
+                                        }}
+                                    />
+                                </td>
+
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">
                                         <img
@@ -233,6 +373,14 @@ export default function AdminAdmissionPage() {
                                     <div className="flex justify-center gap-2 flex-wrap">
                                         <Btn onClick={() => setView(a)}>View</Btn>
                                         <Btn gray onClick={() => setEdit(a)}>Docs</Btn>
+                                        {/* PROMOTE BUTTON */}
+                                        <Btn
+                                            gray
+                                            disabled={a.status !== "approved"}
+                                            onClick={() => setPromote(a)}
+                                        >
+                                            Promote
+                                        </Btn>
                                         <Btn gray onClick={() => handlePDF(a)}>
                                             {pdfLoading === a._id ? "Loading..." : "PDF"}
                                         </Btn>
@@ -252,8 +400,6 @@ export default function AdminAdmissionPage() {
                                         >
                                             {statusLoading ? "..." : "✕"}
                                         </Btn>
-
-
                                         <Btn dark onClick={() => handleDelete(a._id)}>🗑</Btn>
                                     </div>
                                 </td>
@@ -272,7 +418,41 @@ export default function AdminAdmissionPage() {
                     pdfLoading={pdfLoading}
                 />
             )}
+            {/* ================= PROMOTE MODAL ================= */}
+            {promote && (
+                <Modal title="Promote Student" onClose={() => setPromote(null)}>
+                    <p className="text-sm mb-3">
+                        Promote <b>{promote.studentName}</b> from{" "}
+                        <b>{promote.classApplied}</b>
+                    </p>
 
+                    <select
+                        className="w-full border rounded p-2 mb-4"
+                        value={nextClass}
+                        onChange={(e) => setNextClass(e.target.value)}
+                    >
+                        <option value="">Select Next Class</option>
+                        <option value="Nursery">Nursery</option>
+                        <option value="LKG">LKG</option>
+                        <option value="UKG">UKG</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select>
+
+                    <button
+                        onClick={handlePromote}
+                        className="w-full bg-emerald-600 text-white py-2 rounded"
+                    >
+                        Promote Student
+                    </button>
+                </Modal>
+            )}
             {/* ================= EXPORT MODAL ================= */}
             {exportOpen && (
                 <Modal title="Export Admissions PDF" onClose={() => setExportOpen(false)}>

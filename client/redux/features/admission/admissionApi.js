@@ -104,6 +104,18 @@ export const admissionApi = createApi({
             ],
         }),
 
+        /* ================= PROMOTE ADMISSION ================= */
+        promoteAdmission: builder.mutation({
+            query: ({ id, nextClass }) => ({
+                url: "/promoteAdmission/promote",
+                method: "POST",
+                body: {
+                    id,
+                    nextClass,
+                },
+            }),
+            invalidatesTags: [{ type: "Admission", id: "LIST" }],
+        }),
 
     }),
 });
@@ -112,9 +124,10 @@ export const {
     useCreateAdmissionMutation,
     useGetAllAdmissionsQuery,
     useGetAdmissionByIdQuery,
-    useUpdateAdmissionMutation,          
+    useUpdateAdmissionMutation,
     useUpdateAdmissionStatusMutation,
     useUpdateAdmissionDocumentsMutation,
     useDeleteAdmissionDocumentMutation,
     useDeleteAdmissionMutation,
+    usePromoteAdmissionMutation,
 } = admissionApi;

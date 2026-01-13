@@ -2,37 +2,37 @@ const nodemailer = require("nodemailer");
 const navbarModel = require("../../models/navbar/navbar");
 
 const sendEmail = async ({ to, subject, bodyHtml }) => {
+  try {
+    /* ================= NAVBAR FETCH (SAFE) ================= */
+    let schoolTitle = "School Admission";
+    let schoolSubtitle = "";
+    let schoolLogo = "";
+
     try {
-        /* ================= NAVBAR FETCH (SAFE) ================= */
-        let schoolTitle = "School Admission";
-        let schoolSubtitle = "";
-        let schoolLogo = "";
+      const navbar = await navbarModel.findOne({ isActive: true });
+      if (navbar?.brand) {
+        schoolTitle = navbar.brand.title || schoolTitle;
+        schoolSubtitle = navbar.brand.subtitle || "";
+        schoolLogo = navbar.brand.logoImage?.url || "";
+      }
+    } catch {
+      console.warn("Navbar not found, fallback used");
+    }
 
-        try {
-            const navbar = await navbarModel.findOne({ isActive: true });
-            if (navbar?.brand) {
-                schoolTitle = navbar.brand.title || schoolTitle;
-                schoolSubtitle = navbar.brand.subtitle || "";
-                schoolLogo = navbar.brand.logoImage?.url || "";
-            }
-        } catch {
-            console.warn("Navbar not found, fallback used");
-        }
+    /* ================= TRANSPORTER ================= */
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: Number(process.env.EMAIL_PORT),
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      tls: { rejectUnauthorized: false },
+    });
 
-        /* ================= TRANSPORTER ================= */
-        const transporter = nodemailer.createTransport({
-            host: process.env.EMAIL_HOST,
-            port: Number(process.env.EMAIL_PORT),
-            secure: false,
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-            tls: { rejectUnauthorized: false },
-        });
-
-        /* ================= PREMIUM RESPONSIVE EMAIL ================= */
-        const html = `
+    /* ================= PREMIUM RESPONSIVE EMAIL ================= */
+    const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -51,14 +51,14 @@ const sendEmail = async ({ to, subject, bodyHtml }) => {
           <tr>
             <td style="background:#0f172a;padding:30px;text-align:center">
               ${schoolLogo
-                ? `<img src="${schoolLogo}" alt="logo" style="height:70px;margin-bottom:12px;max-width:100%"/>`
-                : ""
-            }
+        ? `<img src="${schoolLogo}" alt="logo" style="height:70px;margin-bottom:12px;max-width:100%"/>`
+        : ""
+      }
               <h1 style="color:#ffffff;margin:0;font-size:26px;font-weight:700">${schoolTitle}</h1>
               ${schoolSubtitle
-                ? `<p style="color:#c7d2fe;margin:6px 0 0;font-size:14px">${schoolSubtitle}</p>`
-                : ""
-            }
+        ? `<p style="color:#c7d2fe;margin:6px 0 0;font-size:14px">${schoolSubtitle}</p>`
+        : ""
+      }
             </td>
           </tr>
 
@@ -90,20 +90,19 @@ const sendEmail = async ({ to, subject, bodyHtml }) => {
 </html>
 `;
 
-        /* ================= SEND ================= */
-        await transporter.sendMail({
-            from: `"${schoolTitle}" <${process.env.EMAIL_USER}>`,
-            to,
-            subject,
-            html,
-        });
+    /* ================= SEND ================= */
+    await transporter.sendMail({
+      from: `"${schoolTitle}" <${process.env.EMAIL_USER}>`,
+      to,
+      subject,
+      html,
+    });
+    console.log("✅ Email sent to:", to);
 
-        console.log("✅ Email sent to:", to);
-
-    } catch (error) {
-        console.error("❌ SEND EMAIL ERROR:", error.message);
-        throw error;
-    }
+  } catch (error) {
+    console.error("❌ SEND EMAIL ERROR:", error.message);
+    throw error;
+  }
 };
 
 module.exports = sendEmail;

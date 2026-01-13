@@ -582,6 +582,86 @@ class admissionController {
     }
   };
 
+  /* ================= PROMOTE STUDENT ================= */
+  static promoteStudent = async (req, res) => {
+    try {
+      const { id, nextClass } = req.body;
+
+      if (!id || !nextClass) {
+        return res.status(400).json({
+          success: false,
+          message: "Student ID and next class are required",
+        });
+      }
+
+      const allowedClasses = [
+        "Nursery",
+        "LKG",
+        "UKG",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+      ];
+
+      if (!allowedClasses.includes(nextClass)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid next class",
+        });
+      }
+
+      const oldAdmission = await admissionModel.findById(id);
+      if (!oldAdmission) {
+        return res.status(404).json({
+          success: false,
+          message: "Admission not found",
+        });
+      }
+
+      /* ================= CREATE NEW ADMISSION (COPY) ================= */
+      const newAdmission = await admissionModel.create({
+        studentName: oldAdmission.studentName,
+        dob: oldAdmission.dob,
+        gender: oldAdmission.gender,
+
+        classApplied: nextClass,               // 🔥 NEW CLASS
+        previousClass: oldAdmission.classApplied,
+        promotedFrom: oldAdmission._id,
+        isPromoted: true,
+
+        parentName: oldAdmission.parentName,
+        phone: oldAdmission.phone,
+        email: oldAdmission.email,
+        address: oldAdmission.address,
+
+        studentImage: oldAdmission.studentImage,
+        documents: oldAdmission.documents,
+
+        visitDate: oldAdmission.visitDate,
+        visitTime: oldAdmission.visitTime,
+
+        status: "pending",                     // 🔥 fresh approval
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: "Student promoted successfully",
+        data: newAdmission,
+      });
+
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: error.message,
+      });
+    }
+  };
+
 }
 
 module.exports = admissionController;

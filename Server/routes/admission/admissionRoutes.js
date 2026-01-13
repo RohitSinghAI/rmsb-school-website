@@ -50,5 +50,10 @@ router.delete(
     "/deleteAdmission/delete/:id",
     admissionController.deleteAdmission
 );
+/* ================= PROMOTE STUDENT (COPY → NEXT CLASS) ================= */
+router.post(
+    "/promoteAdmission/promote",
+    admissionController.promoteStudent
+);
 
 module.exports = router;

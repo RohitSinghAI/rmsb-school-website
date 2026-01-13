@@ -2,7 +2,6 @@ import "./globals.css";
 import Providers from "./providers";
 import LayoutWrapper from "./layoutWrapper";
 import ClientToaster from "@/clientToaster";
-import AuthSessionHandler from "./AuthSessionHandler";
 
 import { Poppins, Playfair_Display } from "next/font/google";
 
@@ -33,7 +32,6 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${poppins.variable} ${playfair.variable}`}>
         <Providers>
-          <AuthSessionHandler />
           <LayoutWrapper>{children}</LayoutWrapper>
           <ClientToaster />
         </Providers>
