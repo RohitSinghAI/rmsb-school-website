@@ -30,18 +30,19 @@ const allowedOrigins = [...new Set([
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS Error"));
-      }
-    },
+    origin: [
+      "http://localhost:3000",
+      "https://rmsb-mission-school.vercel.app",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
+
 
 // ================= MIDDLEWARE =================
 app.use(cookieParser());

@@ -67,7 +67,7 @@ class AdminController {
                 { expiresIn: "1d" }
             );
 
-            // 🔥 FIXED COOKIE
+            // ✅ CORRECT COOKIE FOR CROSS-DOMAIN
             res.cookie("token", token, {
                 httpOnly: true,
                 secure: true,
@@ -76,10 +76,10 @@ class AdminController {
                 maxAge: 24 * 60 * 60 * 1000,
             });
 
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "Admin login successful",
-                token, // 🔥 IMPORTANT
+                token, // ✅ frontend ke liye zaruri
                 user: {
                     _id: user._id,
                     name: user.name,
@@ -92,6 +92,7 @@ class AdminController {
             next(error);
         }
     };
+
 
     // LOGOUT
     static logout = async (req, res) => {
