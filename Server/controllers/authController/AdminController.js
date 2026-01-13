@@ -93,7 +93,6 @@ class AdminController {
         }
     };
 
-
     // LOGOUT
     static logout = async (req, res) => {
         res.clearCookie("token", {
