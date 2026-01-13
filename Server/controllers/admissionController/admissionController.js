@@ -552,7 +552,7 @@ class admissionController {
       });
 
     } catch (error) {
-      // console.error("UPDATE ADMISSION ERROR:", error.message);
+      console.error("UPDATE ADMISSION ERROR:", error.message);
       return res.status(500).json({
         success: false,
         message: "Server error while updating admission",
