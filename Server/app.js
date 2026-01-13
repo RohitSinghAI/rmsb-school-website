@@ -43,7 +43,6 @@ app.use(
   })
 );
 
-
 // ================= MIDDLEWARE =================
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
