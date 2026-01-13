@@ -36,7 +36,6 @@ class AdminController {
         try {
             const { email, password } = req.body;
 
-            /* ================= VALIDATION ================= */
             if (!email || !password) {
                 return res.status(400).json({
                     success: false,
@@ -44,7 +43,6 @@ class AdminController {
                 });
             }
 
-            /* ================= FIND ADMIN ================= */
             const user = await Admin
                 .findOne({ email: email.toLowerCase() })
                 .select("+password");
@@ -56,7 +54,6 @@ class AdminController {
                 });
             }
 
-            /* ================= ROLE CHECK ================= */
             if (user.role !== "admin") {
                 return res.status(403).json({
                     success: false,
@@ -64,29 +61,25 @@ class AdminController {
                 });
             }
 
-            if (!process.env.JWT_SECRET) {
-                throw new Error("JWT_SECRET is not defined");
-            }
-
-            /* ================= CREATE JWT ================= */
             const token = jwt.sign(
                 { id: user._id, role: user.role },
                 process.env.JWT_SECRET,
-                { expiresIn: "1d" } // ✅ 1 DAY
+                { expiresIn: "1d" }
             );
 
+            // 🔥 FIXED COOKIE
             res.cookie("token", token, {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
+                secure: true,
+                sameSite: "none",
                 path: "/",
-                maxAge: 24 * 60 * 60 * 1000, // ✅ 1 DAY
+                maxAge: 24 * 60 * 60 * 1000,
             });
 
-            /* ================= RESPONSE ================= */
             res.status(200).json({
                 success: true,
                 message: "Admin login successful",
+                token, // 🔥 IMPORTANT
                 user: {
                     _id: user._id,
                     name: user.name,
@@ -99,6 +92,7 @@ class AdminController {
             next(error);
         }
     };
+
 
     // LOGOUT
     static logout = async (req, res) => {

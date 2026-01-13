@@ -23,13 +23,28 @@ export default function AdminLoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await loginAdmin(formData).unwrap();
+      const res = await loginAdmin(formData).unwrap();
+
+      // 🔥 IMPORTANT: TOKEN SAVE KARO
+      if (res?.token) {
+        localStorage.setItem("adminToken", res.token);
+      }
+
+      // OPTIONAL: admin info
+      if (res?.admin) {
+        localStorage.setItem("adminInfo", JSON.stringify(res.admin));
+      }
+
       toast.success("Login successful");
-      setTimeout(() => router.push("/admin/dashboard"), 1200);
+
+      setTimeout(() => {
+        router.push("/admin/dashboard");
+      }, 1200);
     } catch (err) {
       toast.error(err?.data?.message || "Login failed");
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#fdfcf9] px-4 sm:px-6">
@@ -77,11 +92,10 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 rounded-md text-sm sm:text-base font-medium transition ${
-              isLoading
+            className={`w-full py-3 rounded-md text-sm sm:text-base font-medium transition ${isLoading
                 ? "bg-gray-400 cursor-not-allowed text-white"
                 : "bg-gray-900 hover:bg-black text-white"
-            }`}
+              }`}
           >
             {isLoading ? "Signing in..." : "Login"}
           </button>
