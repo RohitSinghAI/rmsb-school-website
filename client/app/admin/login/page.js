@@ -22,29 +22,33 @@ export default function AdminLoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const res = await loginAdmin(formData).unwrap();
 
-      // 🔥 IMPORTANT: TOKEN SAVE KARO
-      if (res?.token) {
-        localStorage.setItem("adminToken", res.token);
+      // 🔥 TOKEN MUST BE PRESENT
+      if (!res?.token) {
+        toast.error("Login failed: token not received");
+        return;
       }
 
-      // OPTIONAL: admin info
-      if (res?.admin) {
-        localStorage.setItem("adminInfo", JSON.stringify(res.admin));
+      // ✅ SAVE TOKEN
+      localStorage.setItem("adminToken", res.token);
+
+      // ✅ SAVE ADMIN INFO (BACKEND SENDS `user`)
+      if (res?.user) {
+        localStorage.setItem("adminInfo", JSON.stringify(res.user));
       }
 
       toast.success("Login successful");
 
-      setTimeout(() => {
-        router.push("/admin/dashboard");
-      }, 1200);
+      // ✅ SAFE REDIRECT
+      router.replace("/admin/dashboard");
+
     } catch (err) {
       toast.error(err?.data?.message || "Login failed");
     }
   };
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#fdfcf9] px-4 sm:px-6">
@@ -66,7 +70,6 @@ export default function AdminLoginPage() {
           onSubmit={handleSubmit}
           className="px-6 sm:px-10 pb-6 sm:pb-8 space-y-4 sm:space-y-5"
         >
-          {/* Email */}
           <input
             type="email"
             name="email"
@@ -74,10 +77,9 @@ export default function AdminLoginPage() {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 text-sm sm:text-base rounded-md border border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none"
+            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none"
           />
 
-          {/* Password */}
           <input
             type="password"
             name="password"
@@ -85,17 +87,17 @@ export default function AdminLoginPage() {
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 text-sm sm:text-base rounded-md border border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none"
+            className="w-full px-4 py-3 rounded-md border border-gray-300 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 outline-none"
           />
 
-          {/* Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 rounded-md text-sm sm:text-base font-medium transition ${isLoading
+            className={`w-full py-3 rounded-md font-medium transition ${
+              isLoading
                 ? "bg-gray-400 cursor-not-allowed text-white"
                 : "bg-gray-900 hover:bg-black text-white"
-              }`}
+            }`}
           >
             {isLoading ? "Signing in..." : "Login"}
           </button>
@@ -103,24 +105,12 @@ export default function AdminLoginPage() {
 
         {/* Footer */}
         <div className="pb-6 text-center space-y-2">
-          <p className="text-sm text-gray-500">
-            Don’t have an account?{" "}
-            <button
-              onClick={() => router.push("/admin/register")}
-              className="text-gray-900 font-medium hover:underline"
-            >
-              Register
-            </button>
-          </p>
-
-          <p>
-            <button
-              onClick={() => router.push("/admin/forgotPassword")}
-              className="text-sm text-gray-600 hover:underline"
-            >
-              Forgot Password?
-            </button>
-          </p>
+          <button
+            onClick={() => router.push("/admin/forgotPassword")}
+            className="text-sm text-gray-600 hover:underline"
+          >
+            Forgot Password?
+          </button>
         </div>
       </div>
     </div>
