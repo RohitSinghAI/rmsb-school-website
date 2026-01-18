@@ -19,10 +19,15 @@ export default function AdminHeader() {
 
   const handleLogout = async () => {
     if (isLoading) return;
+
     try {
       await logoutAdmin().unwrap();
+      // ✅ Clear redux first
       dispatch(clearAdmin());
-      router.push("/");
+      // ✅ Small delay + hard redirect
+      setTimeout(() => {
+        router.replace("/");
+      }, 100);
     } catch (err) {
       console.error("Logout failed", err);
     }

@@ -30,7 +30,6 @@ class AdminController {
             user: { _id: user._id, name: user.name, email: user.email },
         });
     };
-
     // LOGIN
     static login = async (req, res, next) => {
         try {
@@ -92,7 +91,6 @@ class AdminController {
             next(error);
         }
     };
-
     // LOGOUT
     static logout = async (req, res) => {
         res.clearCookie("token", {
@@ -107,12 +105,10 @@ class AdminController {
             message: "Logout successful",
         });
     };
-
     // PROFILE
     static profile = async (req, res) => {
         res.json({ success: true, user: req.user });
     };
-
     // UPDATE PROFILE
     static updateProfile = async (req, res) => {
         const { name } = req.body;
@@ -136,8 +132,6 @@ class AdminController {
             user,
         });
     };
-
-
     // CHANGE PASSWORD
     static changePassword = async (req, res) => {
         const { oldPassword, newPassword } = req.body;
@@ -156,87 +150,6 @@ class AdminController {
 
         res.json({ success: true, message: "Password changed" });
     };
-
-    //forgotPassword
-    static forgotPassword = async (req, res) => {
-        try {
-            const { email } = req.body;
-
-            if (!email) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Email is required",
-                });
-            }
-
-            const user = await Admin.findOne({ email });
-
-            if (!user) {
-                return res.status(404).json({
-                    success: false,
-                    message: "User not found",
-                });
-            }
-
-            // Generate reset token
-            const resetToken = user.getResetPasswordToken();
-            await user.save({ validateBeforeSave: false });
-
-            // Create reset URL
-            const resetUrl = `${process.env.CLIENT_URL}/admin/reset-password?token=${resetToken}`;
-
-            // Send email
-            await sendEmail({
-                to: user.email,
-                subject: "Password Reset Request",
-                html: `
-        <h2>Password Reset</h2>
-        <p>You requested a password reset.</p>
-        <a href="${resetUrl}">Reset Password</a>
-        <p>This link will expire in 10 minutes.</p>
-      `,
-            });
-
-            return res.status(200).json({
-                success: true,
-                message: "Reset link sent to your email",
-            });
-
-        } catch (error) {
-            console.error("FORGOT PASSWORD ERROR 👉", error);
-
-            return res.status(500).json({
-                success: false,
-                message: "Email could not be sent. Try again later.",
-            });
-        }
-    };
-
-
-    // RESET PASSWORD
-    static resetPassword = async (req, res) => {
-        const hashedToken = crypto
-            .createHash("sha256")
-            .update(req.body.token)
-            .digest("hex");
-
-        const user = await Admin.findOne({
-            resetPasswordToken: hashedToken,
-            resetPasswordExpire: { $gt: Date.now() },
-        });
-
-        if (!user) {
-            return res.status(400).json({ success: false, message: "Invalid token" });
-        }
-
-        user.password = req.body.password;
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpire = undefined;
-        await user.save();
-
-        res.json({ success: true, message: "Password reset successful" });
-    };
-
     // DASHBOARD
     static dashboard = async (req, res) => {
         res.json({ success: true, user: req.user });
@@ -244,10 +157,20 @@ class AdminController {
 
     ///////////////////// Email ////////////////
 
+    // ================= FORGOT PASSWORD =================
     static forgotPassword = async (req, res) => {
         try {
-            const email = req.body.email;
+            const { email } = req.body;
 
+            /* ================= VALIDATION ================= */
+            if (!email) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Email is required",
+                });
+            }
+
+            /* ================= FIND ADMIN ================= */
             const user = await Admin.findOne({ email });
             if (!user) {
                 return res.status(404).json({
@@ -256,35 +179,142 @@ class AdminController {
                 });
             }
 
+            /* ================= GENERATE RESET TOKEN ================= */
             const resetToken = user.getResetPasswordToken();
             await user.save({ validateBeforeSave: false });
 
+            /* ================= RESET URL ================= */
             const resetUrl = `${process.env.CLIENT_URL}/admin/reset-password?token=${resetToken}`;
 
+            /* ================= PREMIUM EMAIL ================= */
+            const bodyHtml = `
+      <div style="font-family:Arial,Helvetica,sans-serif;
+                  max-width:620px;margin:auto;
+                  background:#ffffff;border-radius:12px;
+                  overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08)">
+        
+        <div style="background:#0f172a;color:#ffffff;padding:24px;text-align:center">
+          <h2 style="margin:0;font-size:22px">Admin Password Reset</h2>
+        </div>
 
-            const message = `
-      <h2>Password Reset</h2>
-      <p>You requested a password reset</p>
-      <a href="${resetUrl}">Reset Password</a>
-      <p>This link will expire in 10 minutes</p>
+        <div style="padding:26px;color:#1f2937;font-size:15px;line-height:1.6">
+          <p>Hello <strong>${user.name || "Admin"}</strong>,</p>
+
+          <p>
+            You requested to reset your admin account password.
+            Click the button below to proceed.
+          </p>
+
+          <div style="text-align:center;margin:28px 0">
+            <a href="${resetUrl}"
+              style="background:#2563eb;color:#ffffff;
+              padding:12px 22px;border-radius:6px;
+              text-decoration:none;font-weight:600">
+              Reset Password
+            </a>
+          </div>
+
+          <p style="font-size:14px;color:#475569">
+            This link will expire in <strong>10 minutes</strong>.
+          </p>
+
+          <p style="font-size:13px;color:#64748b">
+            If you did not request this, please ignore this email.
+          </p>
+        </div>
+
+        <div style="background:#f1f5f9;padding:14px;text-align:center;
+                    font-size:12px;color:#6b7280">
+          © ${new Date().getFullYear()} School Management System
+        </div>
+      </div>
     `;
 
+            /* ================= SEND EMAIL ================= */
             await sendEmail({
                 to: user.email,
-                subject: "Reset your password",
-                html: message,
+                subject: "Reset Your Admin Password",
+                bodyHtml, // ✅ IMPORTANT (not `html`)
             });
 
+            /* ================= RESPONSE ================= */
             return res.status(200).json({
                 success: true,
-                message: "Reset link sent to your email",
+                message: "Password reset link sent to your email",
             });
 
         } catch (error) {
             console.error("FORGOT PASSWORD ERROR 👉", error);
+
             return res.status(500).json({
                 success: false,
-                message: "Email could not be sent",
+                message: "Email could not be sent. Please try again later.",
+            });
+        }
+    };
+    // ================= RESET PASSWORD =================
+    static resetPassword = async (req, res) => {
+        try {
+            const { token, password } = req.body;
+
+            /* ================= VALIDATION ================= */
+            if (!token) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Reset token is required",
+                });
+            }
+
+            if (!password) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Password is required",
+                });
+            }
+
+            if (password.length < 6) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Password must be at least 6 characters",
+                });
+            }
+
+            /* ================= HASH TOKEN ================= */
+            const hashedToken = crypto
+                .createHash("sha256")
+                .update(token)
+                .digest("hex");
+
+            /* ================= FIND USER ================= */
+            const user = await Admin.findOne({
+                resetPasswordToken: hashedToken,
+                resetPasswordExpire: { $gt: Date.now() },
+            }).select("+password");
+
+            if (!user) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid or expired reset token",
+                });
+            }
+
+            /* ================= UPDATE PASSWORD ================= */
+            user.password = password; // bcrypt hook runs automatically
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpire = undefined;
+
+            await user.save();
+
+            return res.status(200).json({
+                success: true,
+                message: "Password reset successful. You can now login.",
+            });
+
+        } catch (error) {
+            console.error("RESET PASSWORD ERROR 👉", error);
+            return res.status(500).json({
+                success: false,
+                message: "Server error while resetting password",
             });
         }
     };

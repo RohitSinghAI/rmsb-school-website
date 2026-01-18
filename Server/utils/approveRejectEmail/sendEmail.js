@@ -1,15 +1,24 @@
 const nodemailer = require("nodemailer");
 const navbarModel = require("../../models/navbar/navbar");
 
+/* 🔥 Reuse transporter (BEST PRACTICE) */
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS, // Gmail App Password
+  },
+});
+
 const sendEmail = async ({ to, subject, bodyHtml }) => {
   try {
-    /* ================= NAVBAR FETCH (SAFE) ================= */
+    /* ================= SCHOOL DATA ================= */
     let schoolTitle = "School Admission";
     let schoolSubtitle = "";
     let schoolLogo = "";
 
     try {
-      const navbar = await navbarModel.findOne({ isActive: true });
+      const navbar = await navbarModel.findOne({ isActive: true }).lean();
       if (navbar?.brand) {
         schoolTitle = navbar.brand.title || schoolTitle;
         schoolSubtitle = navbar.brand.subtitle || "";
@@ -19,85 +28,58 @@ const sendEmail = async ({ to, subject, bodyHtml }) => {
       console.warn("Navbar not found, fallback used");
     }
 
-    /* ================= TRANSPORTER ================= */
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: Number(process.env.EMAIL_PORT),
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      tls: { rejectUnauthorized: false },
-    });
+    /* ================= VERIFY SMTP (SAFE) ================= */
+    await transporter.verify();
 
-    /* ================= PREMIUM RESPONSIVE EMAIL ================= */
+    /* ================= EMAIL HTML ================= */
     const html = `
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
-
 <body style="margin:0;padding:0;background:#f4f6f8;font-family:Arial,Helvetica,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f8;padding:20px 0">
-    <tr>
-      <td align="center">
-
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:650px;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 10px 35px rgba(0,0,0,0.08)">
-
-          <!-- HEADER -->
-          <tr>
-            <td style="background:#0f172a;padding:30px;text-align:center">
-              ${schoolLogo
-        ? `<img src="${schoolLogo}" alt="logo" style="height:70px;margin-bottom:12px;max-width:100%"/>`
-        : ""
+  <div style="max-width:650px;margin:20px auto;background:#ffffff;border-radius:12px;overflow:hidden">
+    
+    <div style="background:#0f172a;padding:24px;text-align:center">
+      ${
+        schoolLogo
+          ? `<img src="${schoolLogo}" alt="logo" style="height:60px;margin-bottom:10px"/>`
+          : ""
       }
-              <h1 style="color:#ffffff;margin:0;font-size:26px;font-weight:700">${schoolTitle}</h1>
-              ${schoolSubtitle
-        ? `<p style="color:#c7d2fe;margin:6px 0 0;font-size:14px">${schoolSubtitle}</p>`
-        : ""
+      <h1 style="color:#ffffff;margin:0;font-size:24px">${schoolTitle}</h1>
+      ${
+        schoolSubtitle
+          ? `<p style="color:#c7d2fe;margin:6px 0 0;font-size:13px">${schoolSubtitle}</p>`
+          : ""
       }
-            </td>
-          </tr>
+    </div>
 
-          <!-- BODY -->
-          <tr>
-            <td style="padding:32px 26px;color:#1f2937;font-size:15px;line-height:1.7">
-              ${bodyHtml}
-            </td>
-          </tr>
+    <div style="padding:28px;color:#1f2937;font-size:15px;line-height:1.7">
+      ${bodyHtml}
+    </div>
 
-          <!-- FOOTER -->
-          <tr>
-            <td style="background:#f1f5f9;padding:18px;text-align:center">
-              <p style="margin:0;font-size:12px;color:#4b5563">
-                © ${new Date().getFullYear()} ${schoolTitle}. All Rights Reserved.
-              </p>
-              <p style="margin:6px 0 0;font-size:11px;color:#9ca3af">
-                This is an automated email. Please do not reply.
-              </p>
-            </td>
-          </tr>
+    <div style="background:#f1f5f9;padding:14px;text-align:center">
+      <p style="margin:0;font-size:12px;color:#4b5563">
+        © ${new Date().getFullYear()} ${schoolTitle}. All rights reserved.
+      </p>
+      <p style="margin:6px 0 0;font-size:11px;color:#9ca3af">
+        This is an automated email. Please do not reply.
+      </p>
+    </div>
 
-        </table>
-
-      </td>
-    </tr>
-  </table>
+  </div>
 </body>
-</html>
-`;
+</html>`;
 
-    /* ================= SEND ================= */
+    /* ================= SEND MAIL ================= */
     await transporter.sendMail({
       from: `"${schoolTitle}" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
     });
-    // console.log("✅ Email sent to:", to);
 
   } catch (error) {
     console.error("❌ SEND EMAIL ERROR:", error.message);

@@ -398,6 +398,168 @@ class admissionController {
       });
     }
   };
+  // static updateAdmissionStatus = async (req, res) => {
+  //   try {
+  //     const { id } = req.params;
+  //     const { status } = req.body;
+
+  //     /* ================= VALIDATION ================= */
+  //     const allowedStatus = ["approved", "rejected", "pending"];
+  //     if (!allowedStatus.includes(status)) {
+  //       return res.status(400).json({
+  //         success: false,
+  //         message: "Invalid admission status",
+  //       });
+  //     }
+
+  //     /* ================= FIND ADMISSION ================= */
+  //     const admission = await admissionModel.findById(id);
+
+  //     if (!admission) {
+  //       return res.status(404).json({
+  //         success: false,
+  //         message: "Admission not found",
+  //       });
+  //     }
+
+  //     // 🛑 Prevent duplicate update
+  //     if (admission.status === status) {
+  //       return res.status(200).json({
+  //         success: true,
+  //         message: "Admission status already updated",
+  //         data: admission,
+  //       });
+  //     }
+
+  //     /* ================= UPDATE STATUS ================= */
+  //     admission.status = status;
+
+  //     // If rejected or pending → remove roll number
+  //     if (status !== "approved") {
+  //       admission.rollNumber = undefined;
+  //     }
+
+  //     // ✅ Save first (important)
+  //     await admission.save();
+
+  //     /* ================= EMAIL (NON-BLOCKING) ================= */
+  //     if (admission.email) {
+  //       let subject = "";
+  //       let bodyHtml = "";
+
+  //       if (status === "approved") {
+  //         subject = "🎉 Admission Approved";
+  //         bodyHtml = `
+  //         <p>Dear <strong>${admission.parentName}</strong>,</p>
+
+  //         <p>
+  //           We are pleased to inform you that the admission application
+  //           for <strong>${admission.studentName}</strong> has been
+  //           <span style="color:#16a34a;font-weight:700">APPROVED</span>.
+  //         </p>
+
+  //         <table width="100%" cellpadding="0" cellspacing="0"
+  //           style="border-collapse:collapse;margin:22px 0;font-size:14px">
+  //           <tr style="background:#f8fafc">
+  //             <td style="border:1px solid #e5e7eb;padding:10px"><b>Student Name</b></td>
+  //             <td style="border:1px solid #e5e7eb;padding:10px">${admission.studentName}</td>
+  //           </tr>
+  //           <tr>
+  //             <td style="border:1px solid #e5e7eb;padding:10px"><b>Class</b></td>
+  //             <td style="border:1px solid #e5e7eb;padding:10px">${admission.classApplied}</td>
+  //           </tr>
+  //           <tr style="background:#f8fafc">
+  //             <td style="border:1px solid #e5e7eb;padding:10px"><b>Roll Number</b></td>
+  //             <td style="border:1px solid #e5e7eb;padding:10px;font-weight:700;color:#1d4ed8">
+  //               ${admission.rollNumber}
+  //             </td>
+  //           </tr>
+  //         </table>
+
+  //         <p>Please visit the school office to complete the remaining formalities.</p>
+
+  //         <p style="margin-top:26px">
+  //           Regards,<br/>
+  //           <strong>Mr. Narendra Singh Kushwaha</strong><br/>
+  //           <span style="color:#475569">Principal</span>
+  //         </p>
+  //       `;
+  //       }
+
+  //       if (status === "rejected") {
+  //         subject = "Admission Status Update";
+  //         bodyHtml = `
+  //         <p>Dear <strong>${admission.parentName}</strong>,</p>
+
+  //         <p>
+  //           After careful review, we regret to inform you that the admission
+  //           application for <strong>${admission.studentName}</strong>
+  //           could not be approved at this time.
+  //         </p>
+
+  //         <p>
+  //           We appreciate your interest and wish your child success ahead.
+  //         </p>
+
+  //         <p style="margin-top:26px">
+  //           Sincerely,<br/>
+  //           <strong>Mr. Narendra Singh Kushwaha</strong><br/>
+  //           <span style="color:#475569">Principal</span>
+  //         </p>
+  //       `;
+  //       }
+
+  //       if (status === "pending") {
+  //         subject = "Admission Under Review";
+  //         bodyHtml = `
+  //         <p>Dear <strong>${admission.parentName}</strong>,</p>
+
+  //         <p>
+  //           The admission application for
+  //           <strong>${admission.studentName}</strong> is currently
+  //           <span style="color:#ca8a04;font-weight:700">UNDER REVIEW</span>.
+  //         </p>
+
+  //         <p>You will be notified once a final decision is made.</p>
+
+  //         <p style="margin-top:26px">
+  //           Regards,<br/>
+  //           <strong>Mr. Narendra Singh Kushwaha</strong><br/>
+  //           <span style="color:#475569">Principal</span>
+  //         </p>
+  //       `;
+  //       }
+
+  //       // 🛑 EMAIL MUST NEVER BREAK API
+  //       try {
+  //         if (subject && bodyHtml) {
+  //           await sendEmail({
+  //             to: admission.email,
+  //             subject,
+  //             bodyHtml,
+  //           });
+  //         }
+  //       } catch (emailError) {
+  //         console.error("EMAIL ERROR:", emailError.message);
+  //       }
+  //     }
+
+  //     /* ================= RESPONSE ================= */
+  //     return res.status(200).json({
+  //       success: true,
+  //       message: `Admission ${status} successfully`,
+  //       data: admission,
+  //     });
+
+  //   } catch (error) {
+  //     console.error("UPDATE ADMISSION ERROR:", error.message);
+  //     return res.status(500).json({
+  //       success: false,
+  //       message: "Server error while updating admission",
+  //     });
+  //   }
+  // };
+
   static updateAdmissionStatus = async (req, res) => {
     try {
       const { id } = req.params;
@@ -414,7 +576,6 @@ class admissionController {
 
       /* ================= FIND ADMISSION ================= */
       const admission = await admissionModel.findById(id);
-
       if (!admission) {
         return res.status(404).json({
           success: false,
@@ -422,7 +583,7 @@ class admissionController {
         });
       }
 
-      // 🛑 Prevent duplicate update
+      /* ================= PREVENT DUPLICATE ================= */
       if (admission.status === status) {
         return res.status(200).json({
           success: true,
@@ -434,113 +595,142 @@ class admissionController {
       /* ================= UPDATE STATUS ================= */
       admission.status = status;
 
-      // If rejected or pending → remove roll number
+      // pending / rejected → remove roll number
       if (status !== "approved") {
-        admission.rollNumber = undefined;
+        admission.rollNumber = null;
       }
 
-      // ✅ Save first (important)
+      // Save (roll number generated by schema if approved)
       await admission.save();
 
-      /* ================= EMAIL (NON-BLOCKING) ================= */
+      /* ================= EMAIL ================= */
       if (admission.email) {
         let subject = "";
         let bodyHtml = "";
 
+        /* ---------- APPROVED EMAIL ---------- */
         if (status === "approved") {
-          subject = "🎉 Admission Approved";
+          subject = "Admission Status Update";
+
           bodyHtml = `
-          <p>Dear <strong>${admission.parentName}</strong>,</p>
+        <div style="
+          max-width:620px;
+          margin:30px auto;
+          background:#ffffff;
+          border-radius:12px;
+          border:1px solid #e5e7eb;
+          font-family:Arial,Helvetica,sans-serif;
+          color:#1f2937">
 
-          <p>
-            We are pleased to inform you that the admission application
-            for <strong>${admission.studentName}</strong> has been
-            <span style="color:#16a34a;font-weight:700">APPROVED</span>.
-          </p>
+          <div style="padding:32px">
 
-          <table width="100%" cellpadding="0" cellspacing="0"
-            style="border-collapse:collapse;margin:22px 0;font-size:14px">
-            <tr style="background:#f8fafc">
-              <td style="border:1px solid #e5e7eb;padding:10px"><b>Student Name</b></td>
-              <td style="border:1px solid #e5e7eb;padding:10px">${admission.studentName}</td>
-            </tr>
-            <tr>
-              <td style="border:1px solid #e5e7eb;padding:10px"><b>Class</b></td>
-              <td style="border:1px solid #e5e7eb;padding:10px">${admission.classApplied}</td>
-            </tr>
-            <tr style="background:#f8fafc">
-              <td style="border:1px solid #e5e7eb;padding:10px"><b>Roll Number</b></td>
-              <td style="border:1px solid #e5e7eb;padding:10px;font-weight:700;color:#1d4ed8">
-                ${admission.rollNumber}
-              </td>
-            </tr>
-          </table>
+            <p style="margin-top:0">
+              Dear <strong>${admission.parentName}</strong>,
+            </p>
 
-          <p>Please visit the school office to complete the remaining formalities.</p>
+            <p>
+              The admission application for
+              <strong>${admission.studentName}</strong>
+              has been approved.
+            </p>
 
-          <p style="margin-top:26px">
-            Regards,<br/>
-            <strong>Mr. Narendra Singh Kushwaha</strong><br/>
-            <span style="color:#475569">Principal</span>
-          </p>
+            <div style="
+              margin:24px 0;
+              border:1px solid #e5e7eb;
+              border-radius:8px;
+              overflow:hidden">
+
+              <div style="padding:12px 16px;background:#f9fafb">
+                <strong>Student Name:</strong>
+                ${admission.studentName}
+              </div>
+
+              <div style="padding:12px 16px">
+                <strong>Class:</strong>
+                ${admission.classApplied}
+              </div>
+
+              <div style="padding:14px 16px;background:#f1f5f9">
+                <strong>Roll Number:</strong>
+                <span style="
+                  display:inline-block;
+                  margin-left:6px;
+                  padding:4px 12px;
+                  background:#0f172a;
+                  color:#ffffff;
+                  border-radius:20px;
+                  font-size:14px">
+                  ${admission.rollNumber}
+                </span>
+              </div>
+            </div>
+
+            <p>
+              Please visit the school office to complete the remaining admission
+              formalities.
+            </p>
+
+            <p style="margin-top:28px">
+              Regards,<br/>
+              <strong>Mr. Narendra Singh Kushwaha</strong><br/>
+              <span style="color:#6b7280">Principal</span>
+            </p>
+
+          </div>
+
+          <div style="
+            padding:14px;
+            text-align:center;
+            font-size:12px;
+            color:#6b7280;
+            background:#f9fafb">
+            © ${new Date().getFullYear()} School Management System
+          </div>
+        </div>
         `;
         }
 
+        /* ---------- REJECTED EMAIL ---------- */
         if (status === "rejected") {
           subject = "Admission Status Update";
           bodyHtml = `
+        <div style="max-width:600px;margin:auto;background:#ffffff;
+          padding:24px;border-radius:10px;font-family:Arial">
           <p>Dear <strong>${admission.parentName}</strong>,</p>
-
           <p>
-            After careful review, we regret to inform you that the admission
-            application for <strong>${admission.studentName}</strong>
-            could not be approved at this time.
+            After careful review, the admission application for
+            <strong>${admission.studentName}</strong>
+            could not be approved.
           </p>
-
-          <p>
-            We appreciate your interest and wish your child success ahead.
-          </p>
-
-          <p style="margin-top:26px">
-            Sincerely,<br/>
-            <strong>Mr. Narendra Singh Kushwaha</strong><br/>
-            <span style="color:#475569">Principal</span>
-          </p>
-        `;
+          <p>We wish you the best for the future.</p>
+        </div>`;
         }
 
+        /* ---------- PENDING EMAIL ---------- */
         if (status === "pending") {
           subject = "Admission Under Review";
           bodyHtml = `
+        <div style="max-width:600px;margin:auto;background:#ffffff;
+          padding:24px;border-radius:10px;font-family:Arial">
           <p>Dear <strong>${admission.parentName}</strong>,</p>
-
           <p>
             The admission application for
-            <strong>${admission.studentName}</strong> is currently
-            <span style="color:#ca8a04;font-weight:700">UNDER REVIEW</span>.
+            <strong>${admission.studentName}</strong>
+            is currently under review.
           </p>
-
           <p>You will be notified once a final decision is made.</p>
-
-          <p style="margin-top:26px">
-            Regards,<br/>
-            <strong>Mr. Narendra Singh Kushwaha</strong><br/>
-            <span style="color:#475569">Principal</span>
-          </p>
-        `;
+        </div>`;
         }
 
-        // 🛑 EMAIL MUST NEVER BREAK API
-        try {
-          if (subject && bodyHtml) {
-            await sendEmail({
-              to: admission.email,
-              subject,
-              bodyHtml,
-            });
-          }
-        } catch (emailError) {
-          console.error("EMAIL ERROR:", emailError.message);
+        // Non-blocking email
+        if (subject && bodyHtml) {
+          sendEmail({
+            to: admission.email,
+            subject,
+            bodyHtml,
+          }).catch(err =>
+            console.error("EMAIL ERROR:", err.message)
+          );
         }
       }
 
@@ -552,6 +742,13 @@ class admissionController {
       });
 
     } catch (error) {
+      if (error.code === 11000) {
+        return res.status(409).json({
+          success: false,
+          message: "Roll number conflict, please retry approval",
+        });
+      }
+
       console.error("UPDATE ADMISSION ERROR:", error.message);
       return res.status(500).json({
         success: false,

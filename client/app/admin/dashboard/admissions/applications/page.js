@@ -280,8 +280,8 @@ export default function AdmissionPage() {
                         onClick={handleBulkPromote}
                         disabled={!bulkClass}
                         className={`w-full md:w-auto px-5 py-2 rounded text-white transition ${bulkClass
-                                ? "bg-emerald-600 hover:bg-emerald-700"
-                                : "bg-gray-300 cursor-not-allowed"
+                            ? "bg-emerald-600 hover:bg-emerald-700"
+                            : "bg-gray-300 cursor-not-allowed"
                             }`}
                     >
                         Promote Selected
@@ -367,39 +367,56 @@ export default function AdmissionPage() {
                                 <td className="text-center font-medium">{a.classApplied}</td>
                                 <td className="text-center">{a.phone}</td>
                                 <td className="text-center capitalize">{a.status}</td>
-
                                 <td className="p-2">
                                     <div className="flex justify-center gap-2 flex-wrap">
-                                        <Btn onClick={() => setView(a)}>View</Btn>
-                                        <Btn gray onClick={() => setEdit(a)}>Docs</Btn>
-                                        {/* PROMOTE BUTTON */}
+
+                                        {/* VIEW → Blue */}
+                                        <Btn variant="view" onClick={() => setView(a)}>
+                                            View
+                                        </Btn>
+
+                                        {/* DOCS → Indigo */}
+                                        <Btn variant="docs" onClick={() => setEdit(a)}>
+                                            Docs
+                                        </Btn>
+
+                                        {/* PROMOTE → Violet */}
                                         <Btn
-                                            gray
+                                            variant="promote"
                                             disabled={a.status !== "approved"}
                                             onClick={() => setPromote(a)}
                                         >
                                             Promote
                                         </Btn>
-                                        <Btn gray onClick={() => handlePDF(a)}>
+
+                                        {/* PDF → Cyan */}
+                                        <Btn variant="pdf" onClick={() => handlePDF(a)}>
                                             {pdfLoading === a._id ? "Loading..." : "PDF"}
                                         </Btn>
+
+                                        {/* APPROVE → Green */}
                                         <Btn
                                             green
                                             disabled={a.status === "approved" || statusLoading}
                                             onClick={() => handleStatus(a._id, "approved")}
                                         >
-                                            {statusLoading ? "..." : "✓"}
+                                            ✓
                                         </Btn>
 
-
+                                        {/* REJECT → Red */}
                                         <Btn
                                             red
                                             disabled={a.status === "rejected" || statusLoading}
                                             onClick={() => handleStatus(a._id, "rejected")}
                                         >
-                                            {statusLoading ? "..." : "✕"}
+                                            ✕
                                         </Btn>
-                                        <Btn dark onClick={() => handleDelete(a._id)}>🗑</Btn>
+
+                                        {/* DELETE → Dark */}
+                                        <Btn dark onClick={() => handleDelete(a._id)}>
+                                            🗑
+                                        </Btn>
+
                                     </div>
                                 </td>
                             </tr>
@@ -552,6 +569,10 @@ const AdmissionViewModal = ({ admission, onClose, onPDF, pdfLoading }) => {
             toast.error("Update failed");
         }
     };
+    const toDateInputValue = (date) => {
+        if (!date) return "";
+        return new Date(date).toISOString().split("T")[0];
+    };
 
     return (
         <Modal title="Full Admission Details" onClose={onClose}>
@@ -631,16 +652,13 @@ const AdmissionViewModal = ({ admission, onClose, onPDF, pdfLoading }) => {
                         <Input
                             type="date"
                             label="Date of Birth"
-                            value={
-                                data.dob
-                                    ? data.dob.slice(0, 10)
-                                    : ""
-                            }
+                            value={toDateInputValue(data.dob)}
                             disabled={!editMode}
                             onChange={(e) =>
                                 update("dob", e.target.value)
                             }
                         />
+
                     </Grid>
                 </div>
             </Section>
@@ -696,7 +714,7 @@ const AdmissionViewModal = ({ admission, onClose, onPDF, pdfLoading }) => {
                     <Input
                         type="date"
                         label="Visit Date"
-                        value={data.visitDate || ""}
+                        value={toDateInputValue(data.visitDate)}
                         disabled={!editMode}
                         onChange={(e) =>
                             update("visitDate", e.target.value)
@@ -773,29 +791,52 @@ const Btn = ({
     gray,
     dark,
     disabled,
+    variant, // 👈 NEW (view | docs | promote | pdf)
 }) => {
-    const color = disabled
-        ? "bg-gray-300 cursor-not-allowed"
-        : green
-            ? "bg-emerald-600 hover:bg-emerald-700"
-            : red
-                ? "bg-rose-600 hover:bg-rose-700"
-                : gray
-                    ? "bg-indigo-600 hover:bg-indigo-700"
-                    : dark
-                        ? "bg-gray-900 hover:bg-gray-800"
-                        : "bg-blue-600 hover:bg-blue-700";
+    const base =
+        "px-3 py-1 text-xs rounded font-semibold transition-all duration-200";
+
+    let color = "";
+
+    if (disabled) {
+        color = "bg-gray-300 text-gray-600 cursor-not-allowed";
+    } else if (green) {
+        color = "bg-emerald-600 hover:bg-emerald-700 text-white";
+    } else if (red) {
+        color = "bg-rose-600 hover:bg-rose-700 text-white";
+    } else if (dark) {
+        color = "bg-slate-900 hover:bg-black text-white";
+    } else {
+        // 👇 DIFFERENT COLORS BY VARIANT
+        switch (variant) {
+            case "view":
+                color = "bg-blue-600 hover:bg-blue-700 text-white";
+                break;
+            case "docs":
+                color = "bg-indigo-600 hover:bg-indigo-700 text-white";
+                break;
+            case "promote":
+                color = "bg-violet-600 hover:bg-violet-700 text-white";
+                break;
+            case "pdf":
+                color = "bg-cyan-600 hover:bg-cyan-700 text-white";
+                break;
+            default:
+                color = "bg-gray-500 hover:bg-gray-600 text-white";
+        }
+    }
 
     return (
         <button
             onClick={!disabled ? onClick : undefined}
             disabled={disabled}
-            className={`px-3 py-1 text-xs text-white rounded transition ${color}`}
+            className={`${base} ${color}`}
         >
             {children}
         </button>
     );
 };
+
 
 
 const Modal = ({ title, children, onClose }) => (
