@@ -22,13 +22,13 @@ export default function AdminFooter() {
 
           {/* RIGHT */}
           <div className="flex gap-4">
-            <Link href="/privacy" className="hover:text-blue-600">
+            <Link href="#" className="hover:text-blue-600">
               Privacy
             </Link>
-            <Link href="/terms" className="hover:text-blue-600">
+            <Link href="#" className="hover:text-blue-600">
               Terms
             </Link>
-            <Link href="/support" className="hover:text-blue-600">
+            <Link href="#" className="hover:text-blue-600">
               Support
             </Link>
           </div>

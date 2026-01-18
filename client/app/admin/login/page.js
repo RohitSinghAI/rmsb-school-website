@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { useLoginAdminMutation } from "../../../redux/features/adminAuth/adminAuthApi";
 
 export default function AdminLoginPage() {
@@ -26,38 +26,37 @@ export default function AdminLoginPage() {
     try {
       const res = await loginAdmin(formData).unwrap();
 
-      // 🔥 TOKEN MUST BE PRESENT
+      // ❌ Safety check
       if (!res?.token) {
         toast.error("Login failed: token not received");
         return;
       }
 
-      // ✅ SAVE TOKEN
+      // ✅ Save token
       localStorage.setItem("adminToken", res.token);
 
-      // ✅ SAVE ADMIN INFO (BACKEND SENDS `user`)
+      // ✅ Save admin info
       if (res?.user) {
         localStorage.setItem("adminInfo", JSON.stringify(res.user));
       }
 
       toast.success("Login successful");
 
-      // ✅ SAFE REDIRECT
+      // ✅ Redirect
       router.replace("/admin/dashboard");
 
     } catch (err) {
-      toast.error(err?.data?.message || "Login failed");
+      toast.error(err?.data?.message || "Invalid email or password");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#fdfcf9] px-4 sm:px-6">
-      <Toaster position="top-right" />
-
+    <div className="min-h-screen flex items-center justify-center bg-[#fdfcf9] px-4">
       <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+
         {/* Header */}
-        <div className="px-6 sm:px-10 pt-8 sm:pt-10 pb-4 sm:pb-6 text-center">
-          <h2 className="text-2xl sm:text-3xl font-heading text-gray-900">
+        <div className="px-8 pt-10 pb-6 text-center">
+          <h2 className="text-3xl font-semibold text-gray-900">
             Admin Login
           </h2>
           <p className="text-sm text-gray-500 mt-2">
@@ -66,10 +65,8 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="px-6 sm:px-10 pb-6 sm:pb-8 space-y-4 sm:space-y-5"
-        >
+        <form onSubmit={handleSubmit} className="px-8 pb-8 space-y-5">
+
           <input
             type="email"
             name="email"
@@ -104,7 +101,7 @@ export default function AdminLoginPage() {
         </form>
 
         {/* Footer */}
-        <div className="pb-6 text-center space-y-2">
+        <div className="pb-6 text-center">
           <button
             onClick={() => router.push("/admin/forgotPassword")}
             className="text-sm text-gray-600 hover:underline"
@@ -112,6 +109,7 @@ export default function AdminLoginPage() {
             Forgot Password?
           </button>
         </div>
+
       </div>
     </div>
   );
